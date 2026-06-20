@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gibbbale.github.io/mt11tools/sitemap.xml
