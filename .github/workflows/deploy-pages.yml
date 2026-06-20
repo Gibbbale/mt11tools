@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -21,17 +21,19 @@ jobs:
         run: |
           rm -rf site
           mkdir -p site
+          # Copy top-level static files (html/css/js)
           cp -v -- *.html *.css *.js site 2>/dev/null || true
+          # Copy common static directories if present
           for d in assets static public dist build; do
             if [ -d "$d" ]; then
               cp -R "$d"/* site/ || true
             fi
           done
 
-      - name: Upload artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v1
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: site
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+          publish_dir: ./site
+          publish_branch: gh-pages
+          # Use the default GITHUB_TOKEN (will be provided automatically)
+          personal_token: ${{ secrets.GITHUB_TOKEN }}
