@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Calcolatore Rating Calciatore</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navigazione">
+    <a class="pulsante secondario" href="index.html">Home</a>
+</nav>
+
+<h2>Calcolatore Rating</h2>
+
+<p class="intro-valori">Aggiungi i valori del tuo giocatore che vedi nell'app</p>
+
+<div class="gestione-giocatori">
+    <div class="campo-giocatore">
+        <label for="nome-giocatore">Nome giocatore:</label>
+        <input type="text" id="nome-giocatore" placeholder="Es. gibbale">
+    </div>
+
+    <div class="campo-giocatore">
+        <label for="giocatori-salvati">Giocatori salvati:</label>
+        <select id="giocatori-salvati" onchange="caricaGiocatoreSelezionato()">
+            <option value="">Nuovo giocatore</option>
+        </select>
+    </div>
+</div>
+
+<div class="campi-statistiche">
+    <div class="campo-statistica">
+        <label for="parata">Parata:</label>
+        <input type="number" id="parata" step="0.01">
+    </div>
+
+    <div class="campo-statistica">
+        <label for="contrasto">Contrasto:</label>
+        <input type="number" id="contrasto" step="0.01">
+    </div>
+
+    <div class="campo-statistica">
+        <label for="passaggio">Passaggio:</label>
+        <input type="number" id="passaggio" step="0.01">
+    </div>
+
+    <div class="campo-statistica">
+        <label for="tiro">Tiro:</label>
+        <input type="number" id="tiro" step="0.01">
+    </div>
+
+    <div class="campo-statistica">
+        <label for="velocita">Velocita:</label>
+        <input type="number" id="velocita" step="0.01">
+    </div>
+
+    <div class="campo-statistica">
+        <label for="forza">Forza:</label>
+        <input type="number" id="forza" step="0.01">
+    </div>
+</div>
+
+<div class="azioni">
+    <button onclick="calcola()">Calcola</button>
+    <button class="secondario" onclick="salvaGiocatore()">Salva giocatore</button>
+    <button class="secondario" onclick="nuovoGiocatore()">Nuovo giocatore</button>
+    <button class="secondario" onclick="cancellaGiocatore()">Elimina giocatore</button>
+    <span id="stato-salvataggio" aria-live="polite"></span>
+</div>
+
+<table id="tabella-risultati" hidden>
+    <thead>
+        <tr>
+            <th>Ruolo</th>
+            <th>Rating</th>
+        </tr>
+    </thead>
+    <tbody id="risultati"></tbody>
+</table>
+
+<script src="script.js"></script>
+</body>
+</html>
