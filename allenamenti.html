@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Allenamenti MT11</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navigazione">
+    <a class="pulsante secondario" href="index.html">Home</a>
+</nav>
+
+<h2>Allenamenti</h2>
+
+<p class="intro-valori">Seleziona un allenamento e indica quanti try hai sbagliato per ogni livello.</p>
+
+<div class="gestione-allenamento">
+    <div class="campo-allenamento">
+        <label for="allenamento">Allenamento:</label>
+        <select id="allenamento">
+            <option value="parata">Parata</option>
+            <option value="contrasto">Contrasto</option>
+            <option value="passaggio">Passaggio</option>
+            <option value="tiro">Tiro</option>
+            <option value="velocita" disabled>Velocità - da configurare</option>
+            <option value="forza" selected>Forza</option>
+        </select>
+    </div>
+
+    <div class="regole-allenamento" id="regole-allenamento">
+        <strong>Forza:</strong> 3 try per livello. Ogni try sbagliato vale 20 punti. Al livello 1 ogni try riuscito vale 70 punti e aumenta di 7 punti a ogni livello.
+    </div>
+</div>
+
+<div class="riepilogo-allenamento">
+    <div>
+        <span>Totale ottenibile</span>
+        <strong id="totale-ottenibile">0</strong>
+    </div>
+    <div>
+        <span>Massimo senza errori</span>
+        <strong id="totale-massimo">0</strong>
+    </div>
+    <div>
+        <span>Punti persi</span>
+        <strong id="punti-persi">0</strong>
+    </div>
+    <div>
+        <span>Try sbagliati</span>
+        <strong id="try-sbagliati">0</strong>
+    </div>
+</div>
+
+<div class="azioni">
+    <button onclick="azzeraErroriAllenamento()">Azzera errori</button>
+    <span id="stato-allenamento" aria-live="polite"></span>
+</div>
+
+<div class="tabella-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Livello</th>
+                <th>Punti try riuscito</th>
+                <th>Try sbagliati</th>
+                <th>Punti ottenibili</th>
+            </tr>
+        </thead>
+        <tbody id="livelli-allenamento"></tbody>
+    </table>
+</div>
+
+<script src="allenamenti.js"></script>
+</body>
+</html>
