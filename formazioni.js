@@ -6,16 +6,16 @@ const PLAYERS_KEY = "ratingCalciatoreGiocatori";
 
 // FORMAZIONI richieste (lista posizioni)
 const FORMATIONS = {
-  "3-5-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Centrocampista","Centrocampista","Centrocampista","Ala","Ala","Punta","Punta"],
-  "4-4-2": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Punta","Punta"],
+  "3-5-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Mediano","Centrocampista","Centrocampista","Ala","Ala","Punta","Punta"],
+  "4-4-2": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Ala","Ala","Punta","Punta"],
   "4-3-3": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Ala","Punta","Ala"],
-  "4-5-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Punta"],
-  "5-3-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino","Centrocampista","Centrocampista","Centrocampista","Punta","Punta"],
-  "5-4-1": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Punta"],
-  "3-4-3": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Ala","Punta","Ala"],
-  "4-3-2-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Trequartista","Trequartista","Punta"],
-  "4-2-3-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Trequartista","Trequartista","Trequartista","Punta"],
-  "3-4-1-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Trequartista","Punta","Punta"]
+  "4-5-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Mediano","Mediano","Centrocampista","Ala","Ala","Punta"],
+  "5-3-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Trequartista","Punta","Punta"],
+  "5-4-1": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Ala","Ala","Punta"],
+  "3-4-3": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino Fluidificante","Terzino Fluidificante","Mediano","Centrocampista","Ala","Ala","Punta"],
+  "4-3-1-2": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Terzino Fluidificante","Terzino Fluidificante","Centrocampista","Trequartista","Punta","Punta"],
+  "4-2-3-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Trequartista","Ala","Ala","Punta"],
+  "3-4-1-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino Fluidificante","Terzino Fluidificante","Centrocampista","Centrocampista","Trequartista","Punta","Punta"]
 };
 
 // Robust buildPlayersFromStorage: prova più chiavi e più formati
@@ -265,6 +265,10 @@ function roleToClass(role) {
 function renderResult(res) {
   const la = document.getElementById("lineup-area");
   const ba = document.getElementById("bench-area");
+
+  // Svuota i contenitori prima di renderizzare per evitare accumulo di tabelle
+  if (la) la.innerHTML = "";
+  if (ba) ba.innerHTML = "";
 
   const t = document.createElement("table");
   t.className = "lineup-table";
