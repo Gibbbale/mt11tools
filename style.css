@@ -225,3 +225,26 @@ th {
         grid-template-columns: 1fr;
     }
 }
+
+/* Style per la tabella pesi in rating.html */
+.tabella-pesi {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-family: monospace;
+  background: #151515;
+  color: #e6e6e6;
+}
+.tabella-pesi th,
+.tabella-pesi td {
+  padding: 6px 8px;
+  border: 1px solid #2a2a2a;
+  text-align: center;
+  font-weight: normal;
+}
+.tabella-pesi thead th {
+  background: #222;
+  font-weight: 700;
+}
+.spiegazione-calcolo p { margin: 6px 0 12px; color: #ccc; }
+.spiegazione-calcolo .nota { font-size: 0.9em; color: #aaa; margin-top: 8px; }
