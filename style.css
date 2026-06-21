@@ -1,306 +1,226 @@
-html {
-    min-height: 100%;
-    background:
-        linear-gradient(rgba(7, 32, 22, 0.68), rgba(7, 32, 22, 0.68)),
-        repeating-linear-gradient(90deg, #11613d 0 90px, #187247 90px 180px);
+/* ========================================================================
+   style.css - versione ripulita
+   - Variabili al top
+   - Blocchi: base, form controls, layout, riepiloghi, tabelle generiche,
+     tabelle specifiche (tabella-pesi, formazioni)
+   ======================================================================== */
+
+/* ------------------------------
+   Variabili globali
+   ------------------------------ */
+:root {
+  --bg-gradient: linear-gradient(rgba(7,32,22,0.68), rgba(7,32,22,0.68)),
+                  repeating-linear-gradient(90deg, #11613d 0 90px, #187247 90px 180px);
+  --card-bg: rgba(255,255,255,0.92);
+  --card-radius: 8px;
+  --card-shadow: 0 18px 50px rgba(0,0,0,0.28);
+
+  --accent: #11613d;
+  --accent-dark: #0d4d31;
+  --muted: #9aa0a6;
+  --text: #17231d;
+  --green-strong: #174d35;
+  --border: #aeb8b1;
+
+  /* Formazioni / dark-table variables (scoped selectors will use them) */
+  --form-bg: #0f0f0f;
+  --form-cell-border: #2b2b2b;
+  --form-muted: #9aa0a6;
+  --form-accent: #c8f7c5;
+  --form-row-alt: #121212;
 }
+
+/* ------------------------------
+   Base / page layout
+   ------------------------------ */
+html {
+  min-height: 100%;
+  background: var(--bg-gradient);
+  box-sizing: border-box;
+}
+*, *::before, *::after { box-sizing: inherit; }
 
 body {
-    font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: 30px auto;
-    min-height: calc(100vh - 60px);
-    padding: 28px;
-    color: #17231d;
-    background-color: rgba(255, 255, 255, 0.92);
-    border-radius: 8px;
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 30px auto;
+  min-height: calc(100vh - 60px);
+  padding: 28px;
+  color: var(--text);
+  background-color: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  line-height: 1.35;
 }
 
-input,
-select {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 7px 6px;
-    border: 1px solid #aeb8b1;
-    border-radius: 6px;
-    font-size: 15px;
-    background-color: #fff;
+/* Inputs / selects standard */
+input, select, textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #fff;
+  color: inherit;
 }
 
-a.pulsante,
-button {
-    display: inline-block;
-    padding: 9px 14px;
-    border: 0;
-    border-radius: 6px;
-    color: #fff;
-    background-color: #11613d;
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
+/* Links / buttons */
+a.pulsante, button {
+  display: inline-block;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  background-color: var(--accent);
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
 }
+a.pulsante:hover, button:hover { background-color: var(--accent-dark); }
 
-a.pulsante:hover,
-button:hover {
-    background-color: #0d4d31;
+a.pulsante.secondario, button.secondario {
+  color: #143a29;
+  background-color: #e8f1eb;
+  border: 1px solid #b8c9be;
 }
+a.pulsante.secondario:hover, button.secondario:hover { background-color: #d9e8de; }
 
-a.pulsante.secondario,
-button.secondario {
-    color: #143a29;
-    background-color: #e8f1eb;
-    border: 1px solid #b8c9be;
-}
+/* Small helpers */
+.controls { display:flex; gap:12px; align-items:center; margin:10px 0 14px; flex-wrap:wrap; }
+.small { font-size:0.9em; color: var(--muted); }
+.search-input { padding:6px 8px; border-radius:6px; border:1px solid #2b2b2b; background:#fff; color:inherit; }
 
-a.pulsante.secondario:hover,
-button.secondario:hover {
-    background-color: #d9e8de;
-}
+/* Navigation */
+.navigazione { margin-bottom: 18px; }
 
-.navigazione {
-    margin-bottom: 18px;
-}
-
-.azioni {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    margin-top: 18px;
-}
-
+/* Home specific */
 .home-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
 }
-
 .logo-home {
-    display: block;
-    width: min(220px, 80vw);
-    height: auto;
-    margin: 0 auto 22px;
-    background: transparent;
+  display: block;
+  width: min(220px, 80vw);
+  height: auto;
+  margin: 0 auto 22px;
+  background: transparent;
 }
+.home-azioni { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 8px; }
 
-.home-azioni {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 8px;
+/* Status lines */
+#stato-salvataggio, #stato-allenamento { min-height: 18px; color: #24513a; font-size: 14px; }
+
+/* Headings and intro */
+.intro-valori { margin: 0 0 18px; font-weight: bold; color: var(--green-strong); }
+
+/* ------------------------------
+   Grids / panels
+   ------------------------------ */
+.gestione-giocatori, .gestione-allenamento {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 22px;
+  margin-bottom: 18px;
 }
-
-#stato-salvataggio {
-    min-height: 18px;
-    color: #24513a;
-    font-size: 14px;
-}
-
-.intro-valori {
-    margin: 0 0 18px;
-    font-weight: bold;
-    color: #174d35;
-}
-
-.gestione-giocatori,
-.gestione-allenamento {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 22px;
-    margin-bottom: 18px;
-}
-
 .campi-statistiche {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 22px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 22px;
 }
-
-.campo-allenamento label,
-.campo-giocatore label,
-.campo-statistica label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: bold;
+.campo-allenamento label, .campo-giocatore label, .campo-statistica label {
+  display:block; margin-bottom:6px; font-weight:700;
 }
-
 .regole-allenamento {
-    align-self: end;
-    padding: 10px 12px;
-    border: 1px solid #b8c9be;
-    border-radius: 6px;
-    background-color: #e8f1eb;
-    line-height: 1.35;
+  align-self:end;
+  padding:10px 12px;
+  border:1px solid #b8c9be;
+  border-radius:6px;
+  background-color:#e8f1eb;
 }
-
 .riepilogo-allenamento {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-    margin: 18px 0;
+  display:grid; grid-template-columns: repeat(4, minmax(0,1fr));
+  gap:10px; margin:18px 0;
 }
-
 .riepilogo-allenamento div {
-    padding: 12px;
-    border: 1px solid #b8c9be;
-    border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0.86);
+  padding:12px; border:1px solid #b8c9be; border-radius:6px; background-color: rgba(255,255,255,0.86);
 }
+.riepilogo-allenamento span { display:block; margin-bottom:6px; color:#24513a; font-size:13px; }
+.riepilogo-allenamento strong { font-size:20px; }
 
-.riepilogo-allenamento span {
-    display: block;
-    margin-bottom: 6px;
-    color: #24513a;
-    font-size: 13px;
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  body { min-height: calc(100vh - 24px); margin: 12px; padding: 20px; }
+  .gestione-giocatori, .gestione-allenamento, .campi-statistiche { grid-template-columns: 1fr; gap:12px; }
+  .riepilogo-allenamento { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  input, select { margin:5px 0; }
 }
+@media (max-width:420px) { .riepilogo-allenamento { grid-template-columns: 1fr; } }
 
-.riepilogo-allenamento strong {
-    font-size: 20px;
-}
 
-#stato-allenamento {
-    min-height: 18px;
-    color: #24513a;
-    font-size: 14px;
-}
-
-.tabella-wrapper {
-    overflow-x: auto;
-}
+/* ------------------------------
+   Generic tables
+   ------------------------------ */
+.tabella-wrapper { overflow-x: auto; }
 
 table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 20px;
-    background-color: rgba(255, 255, 255, 0.95);
-}
-
-#tabella-risultati[hidden] {
-    display: none;
-}
-
-th,
-td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-}
-
-th {
-    color: #fff;
-    background-color: #174d35;
-}
-
-@media (max-width: 600px) {
-    body {
-        min-height: calc(100vh - 24px);
-        margin: 12px;
-        padding: 20px;
-        border-radius: 8px;
-    }
-
-    .gestione-giocatori,
-    .gestione-allenamento,
-    .campi-statistiche {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    .riepilogo-allenamento {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    input,
-    select {
-        margin: 5px 0;
-    }
-}
-
-@media (max-width: 420px) {
-    .riepilogo-allenamento {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Style per la tabella pesi in rating.html */
-.tabella-pesi {
-  width: 100%;
   border-collapse: collapse;
-  margin: 12px 0;
-  font-family: monospace;
-  background: #151515;
-  color: #e6e6e6;
+  width: 100%;
+  margin-top: 20px;
+  background-color: rgba(255,255,255,0.95);
 }
-.tabella-pesi th,
-.tabella-pesi td {
-  padding: 6px 8px;
-  border: 1px solid #2a2a2a;
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 8px;
   text-align: center;
-  font-weight: normal;
 }
-.tabella-pesi thead th {
-  background: #222;
-  font-weight: 700;
-}
-.spiegazione-calcolo p { margin: 5px 0 11px; color: #17231d; }
-.spiegazione-calcolo .nota { font-size: 0.9em; color: #aaa; margin-top: 8px; }
+table th { color: #fff; background-color: var(--green-strong); }
 
-/* Formazioni page styles */
-:root{
-  --table-bg: #0f0f0f;
-  --cell-border: #2b2b2b;
-  --muted: #9aa0a6;
-  --accent: #c8f7c5;
-  --row-alt: #121212;
-}
-.controls { display:flex; gap:12px; align-items:center; margin:10px 0 14px; flex-wrap:wrap;}
-.small { font-size:0.9em; color:var(--muted); }
-.pulsante { text-decoration:none; padding:6px 10px; background:#222; color:#fff; border-radius:6px; display:inline-block; }
-.pulsante.secondario { background:#1a1a1a; border:1px solid #2b2b2b; color:#ddd; }
+/* hide explicitly hidden tables */
+#tabella-risultati[hidden] { display:none; }
 
-.table-wrap { width:100%; overflow:auto; background:var(--table-bg); border-radius:8px; padding:8px; box-sizing:border-box; border:1px solid var(--cell-border); }
+/* ------------------------------
+   Rating: tabella pesi (scoped)
+   ------------------------------ */
+.tabella-pesi {
+  width:100%; border-collapse:collapse; margin:12px 0; font-family:monospace;
+  background:#151515; color:#e6e6e6;
+}
+.tabella-pesi th, .tabella-pesi td {
+  padding:6px 8px; border:1px solid #2a2a2a; text-align:center; font-weight:normal;
+}
+.tabella-pesi thead th { background:#222; font-weight:700; }
+.spiegazione-calcolo p { margin:5px 0 11px; color: var(--text); }
+.spiegazione-calcolo .nota { font-size:0.9em; color:#777; margin-top:8px; }
+
+/* ------------------------------
+   Formazioni page: scoped styles
+   (use selectors specific to the form page to avoid global conflicts)
+   ------------------------------ */
+.table-wrap { width:100%; overflow:auto; background: var(--form-bg); border-radius:8px; padding:8px; box-sizing:border-box; border:1px solid var(--form-cell-border); }
 table.players-table, table.lineup-table {
-  width:100%;
-  border-collapse:collapse;
-  font-size:0.95rem;
-  min-width:720px;
+  width:100%; border-collapse:collapse; font-size:0.95rem; min-width:720px;
 }
 table.players-table thead th, table.lineup-table thead th {
-  position: sticky; top:0; background:#0b0b0b; z-index:2;
-  padding:8px 10px; text-align:left; border-bottom:1px solid var(--cell-border);
-  color:#dfe7ea; font-weight:600;
+  position:sticky; top:0; background:#0b0b0b; z-index:2; padding:8px 10px; text-align:left; border-bottom:1px solid var(--form-cell-border); color:#dfe7ea; font-weight:600;
 }
-table.players-table th, table.players-table td,
-table.lineup-table th, table.lineup-table td {
-  padding:8px 10px;
-  border-bottom:1px solid var(--cell-border);
-  border-right:1px solid rgba(255,255,255,0.02);
+table.players-table th, table.players-table td, table.lineup-table th, table.lineup-table td {
+  padding:8px 10px; border-bottom:1px solid var(--form-cell-border); border-right:1px solid rgba(255,255,255,0.02);
 }
-table.players-table th:last-child, table.players-table td:last-child,
-table.lineup-table th:last-child, table.lineup-table td:last-child { border-right:none; }
+table.players-table th:last-child, table.players-table td:last-child, table.lineup-table th:last-child, table.lineup-table td:last-child { border-right:none; }
 
 .checkbox-col { width:56px; text-align:center; }
-.name-col { width: 260px; }
-.stat-col { width: 88px; text-align:center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; color:#e6f0e6; }
+.name-col { width: 260px; text-align:left; padding-left:6px; }
+.stat-col { width: 88px; text-align:center; font-family: ui-monospace, Menlo, Monaco, \"Roboto Mono\", monospace; color:#e6f0e6; }
 
 tbody tr:nth-child(odd) { background: transparent; }
-tbody tr:nth-child(even) { background: var(--row-alt); }
+tbody tr:nth-child(even) { background: var(--form-row-alt); }
 tbody tr:hover { background: rgba(200,247,197,0.04); }
 .selected-best { background: rgba(200,247,197,0.12) !important; font-weight:700; }
 
-@media (max-width:820px) {
-  table.players-table { min-width:600px; }
-  .controls { gap:8px; }
-}
-@media (max-width:520px) {
-  .table-wrap { padding:6px; }
-  table.players-table { font-size:0.88rem; min-width:520px; }
-  .name-col { width: 180px; }
-  .stat-col { width:64px; font-size:0.86rem; }
-}
-
-.search-input { padding:6px 8px; border-radius:6px; border:1px solid #2b2b2b; background:#0b0b0b; color:#eee; }
+/* responsive adjustments for form pages */
+@media (max-width:820px) { table.players-table { min-width:600px; } .controls { gap:8px; } }
+@media (max-width:520px) { .table-wrap { padding:6px; } table.players-table { font-size:0.88rem; min-width:520px; } .name-col { width:180px; } .stat-col { width:64px; font-size:0.86rem; } }
