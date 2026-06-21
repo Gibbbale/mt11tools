@@ -121,7 +121,7 @@ function aggiornaRegoleAllenamento() {
     const allenamento = allenamentoCorrente();
     const regole = document.getElementById("regole-allenamento");
 
-    regole.innerHTML = `<strong>${allenamento.nome}:</strong> ${allenamento.tryPerLivello} try per livello. Ogni try sbagliato vale ${allenamento.puntiSbagliato} punti. Al livello 1 ogni try riuscito vale ${formattaPunti(allenamento.puntiIniziali)} punti e aumenta di ${formattaPunti(allenamento.incremento)} punti a ogni livello.`;
+    regole.innerHTML = `<strong>${allenamento.nome}:</strong> ${allenamento.tryPerLivello} try per livello. Ogni try sbagliato vale ${allenamento.puntiSbagliato} punti. Al livello 1 ogni try riuscito vale ${allenamento.puntiIniziali} punti e aumenta di ${allenamento.incremento} punti a ogni livello.`;
 }
 
 function calcolaAllenamento() {
@@ -130,20 +130,27 @@ function calcolaAllenamento() {
     let totaleMassimo = 0;
     let puntiPersi = 0;
     let trySbagliati = 0;
+    let cumulativo = 0; // accumulo punti ottenuti fino al livello corrente
 
-    for(let livello = 1; livello <= livelliAllenamento; livello++) {
+    for (let livello = 1; livello <= livelliAllenamento; livello++) {
         const puntiRiuscito = puntiSuccesso(livello, allenamento);
         const errori = Number(document.getElementById(`errori-${livello}`).value) || 0;
         const tryRiusciti = allenamento.tryPerLivello - errori;
+
+        // punti ottenuti nel singolo livello
         const puntiLivello = (tryRiusciti * puntiRiuscito) + (errori * allenamento.puntiSbagliato);
         const massimoLivello = allenamento.tryPerLivello * puntiRiuscito;
 
+        // accumuli globali
         totaleOttenibile += puntiLivello;
         totaleMassimo += massimoLivello;
         puntiPersi += massimoLivello - puntiLivello;
         trySbagliati += errori;
 
-        document.getElementById(`punti-${livello}`).textContent = formattaPunti(puntiLivello);
+        // cumulativo: somma dei puntiLivello fino a questo livello
+        cumulativo += puntiLivello;
+        const el = document.getElementById(`punti-${livello}`);
+        if (el) el.textContent = formattaPunti(cumulativo);
     }
 
     document.getElementById("totale-ottenibile").textContent = formattaPunti(totaleOttenibile);
@@ -183,25 +190,25 @@ function creaTabellaAllenamento() {
     tbody.innerHTML = "";
     aggiornaRegoleAllenamento();
 
-    for(let livello = 1; livello <= livelliAllenamento; livello++) {
+    for (let livello = 1; livello <= livelliAllenamento; livello++) {
         const riga = document.createElement("tr");
-        const puntiRiuscito = puntiSuccesso(livello, allenamento);
         const errori = Number(erroriSalvati[livello]) || 0;
 
+        // Livello
         const cellaLivello = document.createElement("td");
         cellaLivello.textContent = livello;
 
-        const cellaPuntiSuccesso = document.createElement("td");
-        cellaPuntiSuccesso.textContent = formattaPunti(puntiRiuscito);
-
+        // Try sbagliati (select)
         const cellaErrori = document.createElement("td");
         cellaErrori.appendChild(creaSelectErrori(livello, errori, allenamento));
 
+        // Punti ottenibili cumulativi (verranno riempiti da calcolaAllenamento)
         const cellaPunti = document.createElement("td");
         cellaPunti.id = `punti-${livello}`;
+        cellaPunti.textContent = "0";
 
+        // Append: livello, try sbagliati, punti ottenibili (cumulativo)
         riga.appendChild(cellaLivello);
-        riga.appendChild(cellaPuntiSuccesso);
         riga.appendChild(cellaErrori);
         riga.appendChild(cellaPunti);
         tbody.appendChild(riga);
