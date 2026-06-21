@@ -5,6 +5,21 @@
   <title>Formazioni - MT11</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="consent-banner.css">
+  <style>
+    .formazioni-page .controls,
+    .formazioni-page .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .formazioni-page .controls label,
+    .formazioni-page .toolbar label { margin-right: 2px; }
+    .formazioni-page section { margin-bottom: 28px; }
+    .formazioni-page #result-area > div { margin-top: 18px; }
+    .formazioni-page .bench-role { color: #444; font-style: italic; }
+  </style>
 </head>
 <body class="formazioni-page">
   <nav class="navigazione">
@@ -20,25 +35,14 @@
       <h3>Giocatori disponibili</h3>
 
       <div class="controls toolbar">
-        <label for="maxPlayers" class="small">Usa fino a:</label>
-        <select id="maxPlayers" class="search-input" aria-label="Limite giocatori">
-          <option value="18">Tutti disponibili (18)</option>
-          <option value="16">16</option>
-          <option value="11">Solo 11</option>
-        </select>
-
         <label for="selectionMode" class="small">Modalità:</label>
         <select id="selectionMode" class="search-input" aria-label="Modalità selezione">
           <option value="hungarian">Migliore per formazione (Hungarian)</option>
           <option value="bestRating">Migliore per rating</option>
-          <option value="bestAverage">Migliore per media</option>
         </select>
 
-        <label class="small" for="filterName">Cerca:</label>
-        <input id="filterName" class="search-input" placeholder="Cerca per nome..." />
-
         <button id="select-all" class="pulsante">Seleziona tutto</button>
-                <button id="refresh-list" class="pulsante">Ricarica lista</button>
+        <button id="refresh-list" class="pulsante">Ricarica lista</button>
 
         <span class="small" style="margin-left:auto;">Seleziona i giocatori da includere nella scelta della formazione.</span>
       </div>
