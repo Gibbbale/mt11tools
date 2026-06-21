@@ -215,94 +215,74 @@ function selectByAverageThenHungarian(players, formationRoles, benchSize) {
   return selectHungarian(subset, formationRoles, benchSize);
 }
 
-// helper: normalizza nome ruolo in classe CSS role-...
-function roleToClass(role) {
-  if (!role) return '';
-  return 'role-' + role.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-}
-
+// render result
 function renderResult(res) {
   const la = document.getElementById("lineup-area");
   const ba = document.getElementById("bench-area");
   la.innerHTML = "<h4>Formazione suggerita (posizione - giocatore - rating)</h4>";
-
-  // Create table with colgroup: first column autosize, next two fixed (role + rating)
   const t = document.createElement("table");
   t.className = "lineup-table";
-  // colgroup: first col auto, next two cols fixed (e.g. 140px and 88px) or choose as needed
-  const colgroup = document.createElement('colgroup');
-  const c1 = document.createElement('col'); // ruolo autosize
-  const c2 = document.createElement('col'); c2.style.width = '220px'; // Giocatore (fissa per uniformità)
-  const c3 = document.createElement('col'); c3.style.width = '88px';  // Rating
-  colgroup.appendChild(c1); colgroup.appendChild(c2); colgroup.appendChild(c3);
-  t.appendChild(colgroup);
-
   t.innerHTML = "<thead><tr><th>Posizione</th><th>Giocatore</th><th>Rating</th></tr></thead>";
   const tb = document.createElement("tbody");
-
-  // trova il massimo rating per evidenziare eventualmente
   const maxRating = Math.max(...res.lineup.map(x => x.rating || 0));
-
   res.lineup.forEach(item => {
     const tr = document.createElement("tr");
-    const roleClass = roleToClass(item.position);
-    if (roleClass) tr.classList.add(roleClass);
-
-    // prima cella: ruolo (usa class role-cell per poterla colorare separatamente)
-    const tdRole = document.createElement('td');
-    tdRole.textContent = item.position || '-';
-    tdRole.className = 'role-cell';
-    tr.appendChild(tdRole);
-
-    // seconda cella: giocatore (nome)
-    const tdName = document.createElement('td');
-    tdName.textContent = item.player ? item.player.name : '-';
-    // limita overflow
-    tdName.title = tdName.textContent;
-    tr.appendChild(tdName);
-
-    // terza cella: rating
-    const tdRating = document.createElement('td');
-    tdRating.textContent = (item.rating || 0).toFixed(2);
-    // se vuoi evidenziare il massimo con classe selected-best, usa:
-    if (item.rating === maxRating) tr.classList.add('selected-best');
-    tr.appendChild(tdRating);
-
+    if (item.rating === maxRating) tr.className = "selected-best";
+    const playerName = item.player ? item.player.name : "-";
+    tr.innerHTML = `<td>${item.position}</td><td>${playerName}</td><td>${(item.rating||0).toFixed(2)}</td>`;
     tb.appendChild(tr);
   });
-
   t.appendChild(tb);
   la.appendChild(t);
   la.innerHTML += `<p class="small">Punteggio totale: ${res.totalScore.toFixed(2)}</p>`;
 
-  // PANCHINA
   ba.innerHTML = "<h4>Panchina</h4>";
-  if (!res.bench || res.bench.length === 0) { ba.innerHTML += "<p>(nessuno)</p>"; return; }
+  if (res.bench.length === 0) { ba.innerHTML += "<p>(nessuno)</p>"; return; }
   const tb2 = document.createElement("table");
   tb2.className = "lineup-table";
-  // colgroup per panchina (stesso schema)
-  const colgroup2 = document.createElement('colgroup');
-  colgroup2.appendChild(document.createElement('col'));
-  const c2b = document.createElement('col'); c2b.style.width = '220px';
-  const c3b = document.createElement('col'); c3b.style.width = '88px';
-  colgroup2.appendChild(c2b); colgroup2.appendChild(c3b);
-  tb2.appendChild(colgroup2);
-
   tb2.innerHTML = "<thead><tr><th>Giocatore</th><th>Media</th></tr></thead>";
   const tb2b = document.createElement("tbody");
   res.bench.forEach(p => {
+    const avg = computeRatingsForPlayer(p).__avg || 0;
     const tr = document.createElement("tr");
-    const tdN = document.createElement("td");
-    tdN.textContent = p.name;
-    tdN.title = p.name;
-    tr.appendChild(tdN);
-    const tdA = document.createElement("td");
-    tdA.textContent = (computeRatingsForPlayer(p).__avg || 0).toFixed(2);
-    tr.appendChild(tdA);
+    tr.innerHTML = `<td>${p.name}</td><td>${avg.toFixed(2)}</td>`;
     tb2b.appendChild(tr);
   });
   tb2.appendChild(tb2b);
   ba.appendChild(tb2);
+}
+
+function refreshList() {
+  const all = buildPlayersFromStorage();
+  const max = Number(document.getElementById("maxPlayers").value) || all.length;
+  renderPlayersTable(all.slice(0, max));
+}
+
+function suggestFormation() {
+  const all = buildPlayersFromStorage();
+  const checks = Array.from(document.querySelectorAll("#players-table tbody input[type=checkbox]"));
+  const selected = [];
+  checks.forEach((cb, idx) => {
+    if (cb.checked) {
+      const arr = all.slice(0, Number(document.getElementById("maxPlayers").value) || all.length);
+      const p = arr[idx];
+      if (p) selected.push(p);
+    }
+  });
+  const playersToUse = selected.length ? selected : all;
+  if (playersToUse.length < 11) { alert("Servono almeno 11 giocatori."); return; }
+
+  const formationKey = document.getElementById("formation").value;
+  const roles = FORMATIONS[formationKey];
+  const benchSize = Number(document.getElementById("benchSize").value) || 7;
+  const mode = document.getElementById("selectionMode").value;
+
+  let res;
+  if (mode === "hungarian") res = selectHungarian(playersToUse, roles, benchSize);
+  else if (mode === "bestRating") res = selectGreedyByRole(playersToUse, roles, benchSize);
+  else res = selectByAverageThenHungarian(playersToUse, roles, benchSize);
+
+  renderResult(res);
 }
 
 function initFormazioniPage() {
