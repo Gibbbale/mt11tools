@@ -1,4 +1,4 @@
-/* cookie-consent.css - stile minimale per banner consenso cookie */
+/* consent-banner.css - stile minimale per banner consenso cookie */
 #cookie-consent {
   position: fixed;
   left: 16px;
@@ -16,24 +16,11 @@
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   font-size: 14px;
 }
-#cookie-consent p {
-  margin: 0;
-  flex: 1;
-}
-#cookie-consent .cc-actions {
-  display: flex;
-  gap: 8px;
-}
+#cookie-consent p { margin: 0; flex: 1; }
+#cookie-consent .cc-actions { display: flex; gap: 8px; }
 #cookie-consent button {
-  background: #fff;
-  color: #111;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
+  background: #fff; color: #111; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;
 }
 #cookie-consent button.secondary {
-  background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2);
 }
