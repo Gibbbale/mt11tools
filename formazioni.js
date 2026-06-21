@@ -1,3 +1,194 @@
+
+📄 formazioni.html — sostituisci tutto il contenuto
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>Formazioni - MT11</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="consent-banner.css">
+  <style>
+    .formazioni-page .controls,
+    .formazioni-page .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .formazioni-page .controls label,
+    .formazioni-page .toolbar label { margin-right: 2px; }
+    .formazioni-page section { margin-bottom: 28px; }
+    .formazioni-page #result-area > div { margin-top: 18px; }
+    .formazioni-page .bench-role { color: #444; font-style: italic; }
+  </style>
+</head>
+<body class="formazioni-page">
+  <nav class="navigazione">
+    <a class="pulsante secondario" href="index.html">Home</a>
+    <a class="pulsante secondario" href="rating.html">Vai a Rating</a>
+  </nav>
+
+  <main>
+    <h2>Formazioni</h2>
+    <p class="small">I giocatori vengono caricati da quelli salvati nella pagina "Calcolo rating". Modifica o salva i giocatori su Rating se necessario.</p>
+
+    <section>
+      <h3>Giocatori disponibili</h3>
+
+      <div class="controls toolbar">
+        <label for="selectionMode" class="small">Modalità:</label>
+        <select id="selectionMode" class="search-input" aria-label="Modalità selezione">
+          <option value="hungarian">Migliore per formazione (Hungarian)</option>
+          <option value="bestRating">Migliore per rating</option>
+        </select>
+
+        <button id="select-all" class="pulsante">Seleziona tutto</button>
+        <button id="refresh-list" class="pulsante">Ricarica lista</button>
+
+        <span class="small" style="margin-left:auto;">Seleziona i giocatori da includere nella scelta della formazione.</span>
+      </div>
+
+      <div class="table-wrap" role="region" aria-label="Tabella giocatori">
+          <div id="players-status" aria-live="polite" class="small" style="margin-bottom:8px;"></div>
+        <table class="players-table" id="players-table" aria-describedby="players-desc">
+                <colgroup>
+                        <col style="width:56px">   <!-- checkbox -->
+                        <col>                      <!-- nome: auto -->
+                        <col style="width:88px">   <!-- parata -->
+                        <col style="width:88px">   <!-- contrasto -->
+                        <col style="width:88px">   <!-- passaggio -->
+                        <col style="width:88px">   <!-- tiro -->
+                        <col style="width:88px">   <!-- velocità -->
+                        <col style="width:88px">   <!-- forza -->
+                </colgroup>
+          <caption id="players-desc" style="display:none">Tabella dei giocatori disponibili con i valori Parata, Contrasto, Passaggio, Tiro, Velocità e Forza</caption>
+          <thead>
+            <tr>
+              <th class="checkbox-col">Usa</th>
+              <th class="name-col">Nome</th>
+              <th class="stat-col">Parata</th>
+              <th class="stat-col">Contrasto</th>
+              <th class="stat-col">Passaggio</th>
+              <th class="stat-col">Tiro</th>
+              <th class="stat-col">Velocità</th>
+              <th class="stat-col">Forza</th>
+            </tr>
+          </thead>
+          <tbody>
+                        <tr class="no-players">
+                        <td colspan="8" style="text-align:center; padding:12px;">Nessun giocatore trovato. Apri "Calcolo rating" e salva i giocatori, poi clicca "Ricarica lista".</td>
+                        </tr>
+                </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h3>Seleziona formazione</h3>
+      <div class="controls">
+        <label for="formation" class="small">Formazione:</label>
+        <select id="formation" class="search-input">
+          <option value="3-5-2">3-5-2</option>
+          <option value="4-4-2">4-4-2</option>
+          <option value="4-3-3">4-3-3</option>
+          <option value="4-5-1">4-5-1</option>
+          <option value="5-3-2">5-3-2</option>
+          <option value="5-4-1">5-4-1</option>
+          <option value="3-4-3">3-4-3</option>
+          <option value="4-3-1-2">4-3-1-2</option>
+          <option value="4-2-3-1">4-2-3-1</option>
+          <option value="3-4-1-2">3-4-1-2</option>
+        </select>
+
+        <label for="benchSize" class="small">Panchina:</label>
+        <select id="benchSize" class="search-input"><option>7</option><option>6</option><option>5</option></select>
+
+        <button id="suggest-btn" class="pulsante">Suggerisci formazione</button>
+      </div>
+    </section>
+
+    <section>
+      <h3>Risultato</h3>
+      <div id="result-area">
+        <div id="lineup-area"></div>
+        <div id="bench-area" style="margin-top:10px;"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- script.js contiene la definizione dei pesi (ruoli) usata per calcolare i rating per ruolo -->
+  <script src="script.js" defer></script>
+  <script src="formazioni.js" defer></script>
+
+  <!-- Cookie banner dynamic loader (fallback inline like other pages) -->
+  <script>
+  (function() {
+    const SCRIPT_SRC = 'consent-banner.js';
+    const CSS_HREF  = 'consent-banner.css';
+    const FALLBACK_TIMEOUT_MS = 600;
+    let scriptLoaded = false;
+
+    const s = document.createElement('script');
+    s.src = SCRIPT_SRC;
+    s.async = true;
+    s.onload = () => { scriptLoaded = true; };
+    s.onerror = () => { scriptLoaded = false; };
+    document.head.appendChild(s);
+
+    if (!document.querySelector(`link[href="${CSS_HREF}"]`)) {
+      const l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = CSS_HREF;
+      document.head.appendChild(l);
+    }
+
+    setTimeout(() => {
+      if (scriptLoaded) return;
+
+      if (!document.getElementById('consent-banner-inline-style')) {
+        const style = document.createElement('style');
+        style.id = 'consent-banner-inline-style';
+        style.textContent = `
+          #cookie-consent { position: fixed; left: 16px; right: 16px; bottom: 16px; background: rgba(17,17,17,0.95); color: #fff; padding: 12px 16px; border-radius: 8px; display: flex; gap: 12px; align-items: center; z-index: 9999; box-shadow: 0 6px 18px rgba(0,0,0,0.3); font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; font-size: 14px; }
+          #cookie-consent p { margin: 0; flex: 1; }
+          #cookie-consent .cc-actions { display: flex; gap: 8px; }
+          #cookie-consent button { background: #fff; color: #111; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+          #cookie-consent button.secondary { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        `;
+        document.head.appendChild(style);
+      }
+
+      if (!document.getElementById('cookie-consent')) {
+        (function() {
+          const STORAGE_KEY = 'mt11_cookie_consent_v1';
+          function hasConsent() { return localStorage.getItem(STORAGE_KEY) === 'accepted'; }
+          function setConsent(value) { localStorage.setItem(STORAGE_KEY, value ? 'accepted' : 'rejected'); }
+          function removeBanner() { const el = document.getElementById('cookie-consent'); if (el) el.remove(); }
+          function onAccept() { setConsent(true); removeBanner(); }
+          function onReject() { setConsent(false); removeBanner(); }
+          if (!hasConsent()) {
+            const container = document.createElement('div');
+            container.id = 'cookie-consent';
+            container.innerHTML = `
+              <p>Usiamo cookie per migliorare l'esperienza e, con il tuo consenso, per analitica e pubblicità. Puoi accettare o rifiutare.</p>
+              <div class="cc-actions">
+                <button id="cc-accept">Accetta</button>
+                <button id="cc-reject" class="secondary">Rifiuta</button>
+              </div>
+            `;
+            document.body.appendChild(container);
+            document.getElementById('cc-accept').addEventListener('click', onAccept);
+            document.getElementById('cc-reject').addEventListener('click', onReject);
+          }
+        })();
+      }
+    }, FALLBACK_TIMEOUT_MS);
+  })();
+  </script>
+</body>
+</html>
+📄 formazioni.js — sostituisci tutto il contenuto
 // formazioni.js
 // Usa: script.js deve essere caricato (definisce `ruoli` array)
 // Key localStorage: ratingCalciatoreGiocatori
@@ -14,7 +205,7 @@ const FORMATIONS = {
   "5-4-1": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Ala","Ala","Punta"],
   "3-4-3": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino Fluidificante","Terzino Fluidificante","Mediano","Centrocampista","Ala","Ala","Punta"],
   "4-3-1-2": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Terzino Fluidificante","Terzino Fluidificante","Centrocampista","Trequartista","Punta","Punta"],
-  "4-2-3-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Trequartista","Ala","Ala","Punta"],
+  "4-2-3-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Ala","Trequartista","Ala","Punta"],
   "3-4-1-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino Fluidificante","Terzino Fluidificante","Centrocampista","Centrocampista","Trequartista","Punta","Punta"]
 };
 
@@ -126,7 +317,6 @@ function renderPlayersTable(players) {
 function toggleSelectAll() {
   const tbody = document.querySelector('#players-table tbody');
   if (!tbody) return;
-  // prendi solo checkbox le cui righe non sono nascoste (display !== 'none')
   const checkboxes = Array.from(tbody.querySelectorAll('input[type="checkbox"]'))
     .filter(cb => {
       const tr = cb.closest('tr');
@@ -135,7 +325,6 @@ function toggleSelectAll() {
       return style.display !== 'none' && style.visibility !== 'hidden';
     });
   if (checkboxes.length === 0) return;
-  // se tutte le checkbox visibili sono già selezionate, le deselezioniamo; altrimenti le selezioniamo tutte
   const allChecked = checkboxes.every(cb => cb.checked);
   checkboxes.forEach(cb => cb.checked = !allChecked);
 }
@@ -179,6 +368,18 @@ function hungarianSolve(cost) {
   return { assignment, value: -v[0] };
 }
 
+// helper: trova il miglior ruolo di un giocatore (tra tutti i ruoli definiti in `ruoli`)
+function getBestRole(player) {
+  const ratings = computeRatingsForPlayer(player);
+  let bestRole = '-', bestRating = -Infinity;
+  for (const k in ratings) {
+    if (k === '__avg' || k === '__max') continue;
+    const v = Number(ratings[k]) || 0;
+    if (v > bestRating) { bestRating = v; bestRole = k; }
+  }
+  return { role: bestRole, rating: bestRating === -Infinity ? 0 : bestRating };
+}
+
 // selection algorithms
 function selectHungarian(players, formationRoles, benchSize) {
   const P = formationRoles.length, N = players.length;
@@ -211,11 +412,11 @@ function selectHungarian(players, formationRoles, benchSize) {
 
   const remaining = [];
   for (let i = 0; i < N; i++) if (!used[i]) {
-    const best = Math.max(...formationRoles.map(role => computeRatingsForPlayer(players[i])[role] || 0));
-    remaining.push({ player: players[i], best });
+    const best = getBestRole(players[i]);
+    remaining.push({ player: players[i], bestRole: best.role, bestRating: best.rating });
   }
-  remaining.sort((a,b) => b.best - a.best);
-  const bench = remaining.slice(0, benchSize).map(x => x.player);
+  remaining.sort((a,b) => b.bestRating - a.bestRating);
+  const bench = remaining.slice(0, benchSize);
   return { lineup, totalScore: total, bench, unassigned: remaining.map(r => r.player) };
 }
 
@@ -237,23 +438,12 @@ function selectGreedyByRole(players, formationRoles, benchSize) {
   }
   const remaining = [];
   for (let i = 0; i < N; i++) if (!used[i]) {
-    const avg = computeRatingsForPlayer(players[i]).__avg || 0;
-    remaining.push({ player: players[i], best: avg });
+    const best = getBestRole(players[i]);
+    remaining.push({ player: players[i], bestRole: best.role, bestRating: best.rating });
   }
-  remaining.sort((a,b) => b.best - a.best);
-  const bench = remaining.slice(0, benchSize).map(x => x.player);
+  remaining.sort((a,b) => b.bestRating - a.bestRating);
+  const bench = remaining.slice(0, benchSize);
   return { lineup, totalScore: total, bench, unassigned: remaining.map(r => r.player) };
-}
-
-function selectByAverageThenHungarian(players, formationRoles, benchSize) {
-  const P = formationRoles.length;
-  const playersWithAvg = players.map(p => {
-    const ratings = computeRatingsForPlayer(p);
-    return { p, avg: ratings.__avg || 0 };
-  });
-  playersWithAvg.sort((a,b) => b.avg - a.avg);
-  const subset = playersWithAvg.slice(0, Math.min(playersWithAvg.length, P + benchSize)).map(x => x.p);
-  return selectHungarian(subset, formationRoles, benchSize);
 }
 
 // helper: normalizza nome ruolo in classe CSS role-...
@@ -317,21 +507,29 @@ function renderResult(res) {
   tb2.className = "lineup-table";
   const colgroup2 = document.createElement('colgroup');
   colgroup2.appendChild(document.createElement('col'));
-  const c2b = document.createElement('col'); c2b.style.width = '220px';
+  const c2b = document.createElement('col'); c2b.style.width = '180px';
   const c3b = document.createElement('col'); c3b.style.width = '88px';
   colgroup2.appendChild(c2b); colgroup2.appendChild(c3b);
   tb2.appendChild(colgroup2);
 
-  tb2.innerHTML = "<thead><tr><th>Giocatore</th><th>Media</th></tr></thead>";
+  tb2.innerHTML = "<thead><tr><th>Giocatore</th><th>Miglior ruolo</th><th>Rating</th></tr></thead>";
   const tb2b = document.createElement("tbody");
-  res.bench.forEach(p => {
+  res.bench.forEach(item => {
     const tr = document.createElement("tr");
     const tdN = document.createElement("td");
-    tdN.textContent = p.name;
-    tdN.title = p.name;
+    tdN.textContent = item.player.name;
+    tdN.title = item.player.name;
     tr.appendChild(tdN);
+
+    const tdRole = document.createElement("td");
+    tdRole.textContent = item.bestRole || '-';
+    tdRole.className = 'bench-role';
+    const roleClass = roleToClass(item.bestRole);
+    if (roleClass) tr.classList.add(roleClass);
+    tr.appendChild(tdRole);
+
     const tdA = document.createElement("td");
-    tdA.textContent = (computeRatingsForPlayer(p).__avg || 0).toFixed(2);
+    tdA.textContent = (Number(item.bestRating) || 0).toFixed(2);
     tr.appendChild(tdA);
     tb2b.appendChild(tr);
   });
@@ -345,15 +543,13 @@ function suggestFormation() {
   const tbody = document.querySelector('#players-table tbody');
   const checkboxes = tbody ? Array.from(tbody.querySelectorAll('input[type="checkbox"]')) : [];
   const selected = [];
-  const max = Number(document.getElementById('maxPlayers')?.value) || all.length;
-  const sourceArr = all.slice(0, max);
   checkboxes.forEach((cb, idx) => {
     if (cb.checked) {
-      const p = sourceArr[idx];
+      const p = all[idx];
       if (p) selected.push(p);
     }
   });
-  const playersToUse = selected.length ? selected : sourceArr;
+  const playersToUse = selected.length ? selected : all;
   if (playersToUse.length < 11) { alert('Servono almeno 11 giocatori.'); return; }
 
   const formationKey = document.getElementById('formation')?.value || Object.keys(FORMATIONS)[0];
@@ -362,17 +558,15 @@ function suggestFormation() {
   const mode = document.getElementById('selectionMode')?.value || 'hungarian';
 
   let res;
-  if (mode === 'hungarian') res = selectHungarian(playersToUse, roles, benchSize);
-  else if (mode === 'bestRating') res = selectGreedyByRole(playersToUse, roles, benchSize);
-  else res = selectByAverageThenHungarian(playersToUse, roles, benchSize);
+  if (mode === 'bestRating') res = selectGreedyByRole(playersToUse, roles, benchSize);
+  else res = selectHungarian(playersToUse, roles, benchSize);
 
   renderResult(res);
 }
 
 function refreshList() {
   const all = buildPlayersFromStorage();
-  const max = Number(document.getElementById('maxPlayers')?.value) || all.length;
-  renderPlayersTable(all.slice(0, max));
+  renderPlayersTable(all);
   const statusEl = document.getElementById('players-status');
   if (statusEl) statusEl.textContent = `${all.length} giocatori trovati.`;
 }
@@ -381,27 +575,10 @@ function initFormazioniPage() {
   const refreshBtn = document.getElementById("refresh-list");
   const suggestBtn = document.getElementById("suggest-btn");
   const selectAllBtn = document.getElementById("select-all");
-  const filterInput = document.getElementById("filterName");
 
   if (selectAllBtn) selectAllBtn.addEventListener("click", toggleSelectAll);
   if (refreshBtn) refreshBtn.addEventListener("click", refreshList);
   if (suggestBtn) suggestBtn.addEventListener("click", suggestFormation);
-
-  if (filterInput) {
-    let timer;
-    filterInput.addEventListener('input', (e) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        const q = String(e.target.value || '').toLowerCase().trim();
-        const rows = document.querySelectorAll('#players-table tbody tr');
-        rows.forEach(row => {
-          const nameCell = row.querySelector('td.name-col') || row.querySelector('td:nth-child(2)');
-          const name = nameCell ? nameCell.textContent.toLowerCase() : '';
-          row.style.display = (!q || name.includes(q)) ? '' : 'none';
-        });
-      }, 120);
-    });
-  }
 
   refreshList();
 }
