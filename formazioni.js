@@ -123,13 +123,23 @@ function renderPlayersTable(players) {
 }
 
 // fallback/utility: toggle selezione di tutti i checkbox nella players-table
+// toggle select all / none — considera solo le righe visibili (filtrate)
 function toggleSelectAll() {
   const tbody = document.querySelector('#players-table tbody');
   if (!tbody) return;
-  const checkboxes = tbody.querySelectorAll('input[type="checkbox"]');
-  if (!checkboxes || checkboxes.length === 0) return;
-  const anyUnchecked = Array.from(checkboxes).some(cb => !cb.checked);
-  checkboxes.forEach(cb => cb.checked = anyUnchecked);
+  // prendi solo checkbox le cui righe non sono nascoste (display !== 'none')
+  const checkboxes = Array.from(tbody.querySelectorAll('input[type="checkbox"]'))
+    .filter(cb => {
+      const tr = cb.closest('tr');
+      if (!tr) return false;
+      // consideriamo visibile anche se non ha display:none (controllo computed style più robusto)
+      const style = window.getComputedStyle(tr);
+      return style.display !== 'none' && style.visibility !== 'hidden';
+    });
+  if (checkboxes.length === 0) return;
+  // se tutte le checkbox visibili sono già selezionate, le deselezioniamo; altrimenti le selezioniamo tutte
+  const allChecked = checkboxes.every(cb => cb.checked);
+  checkboxes.forEach(cb => cb.checked = !allChecked);
 }
 
 // Hungarian solver (rows <= cols)
@@ -388,3 +398,7 @@ function refreshList() {
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initFormazioniPage);
 else initFormazioniPage();
+// Esponi le funzioni principali globalmente per i fallback inline (evita ReferenceError)
+window.toggleSelectAll = toggleSelectAll;
+window.refreshList = refreshList;
+window.suggestFormation = suggestFormation;
