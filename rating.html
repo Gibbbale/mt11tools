@@ -82,50 +82,113 @@
 
 <script src="script.js"></script>
 <script>
-/* loader dinamico per banner - prova a caricare il file esterno e se fallisce inietta fallback inline */
-(function(){
-  var loaded = false;
-  var timeoutMs = 600; // tempo per determinare se il file è bloccato
+/*
+  Dynamic consent loader + fallback:
+  - prova a caricare consent-banner.js/consent-banner.css (nomi non riconoscibili dagli adblocker)
+  - se il file esterno non si carica entro timeout, inietta fallback inline (stile + logica)
+*/
+(function() {
+  const SCRIPT_SRC = 'consent-banner.js';
+  const CSS_HREF  = 'consent-banner.css';
+  const FALLBACK_TIMEOUT_MS = 600;
+  let scriptLoaded = false;
 
-  // prova a caricare lo script esterno (nome senza "cookie" per evitare filtri)
-  var s = document.createElement('script');
-  s.src = 'consent-banner.js';
+  // Try to load external JS
+  const s = document.createElement('script');
+  s.src = SCRIPT_SRC;
   s.async = true;
-  s.onload = function(){ loaded = true; };
-  s.onerror = function(){ loaded = false; };
+  s.onload = () => { scriptLoaded = true; };
+  s.onerror = () => { scriptLoaded = false; };
   document.head.appendChild(s);
 
-  // dopo timeout, se non caricato, inietta fallback inline (stile + logica)
-  setTimeout(function(){
-    if (loaded) return;
-    // inietta stile fallback se il CSS remoto è bloccato
-    if (!document.querySelector('link[href="consent-banner.css"]') && !document.getElementById('consent-banner-inline-style')){
-      var style = document.createElement('style');
+  // If external CSS link not present, append it (optional; adblockers may block it)
+  if (!document.querySelector(`link[href="${CSS_HREF}"]`)) {
+    const l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = CSS_HREF;
+    document.head.appendChild(l);
+  }
+
+  // After timeout, if script not loaded, inject fallback inline
+  setTimeout(() => {
+    if (scriptLoaded) return;
+
+    // Inject inline style only if not present
+    if (!document.getElementById('consent-banner-inline-style')) {
+      const style = document.createElement('style');
       style.id = 'consent-banner-inline-style';
-      style.textContent = '#cookie-consent{position:fixed;left:16px;right:16px;bottom:16px;background:rgba(17,17,17,.95);color:#fff;padding:12px 16px;border-radius:8px;display:flex;gap:12px;align-items:center;z-index:9999;box-shadow:0 6px 18px rgba(0,0,0,.3);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;font-size:14px}#cookie-consent p{margin:0;flex:1}#cookie-consent .cc-actions{display:flex;gap:8px}#cookie-consent button{background:#fff;color:#111;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}#cookie-consent button.secondary{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.2)}';
+      style.textContent = `
+        #cookie-consent {
+          position: fixed;
+          left: 16px;
+          right: 16px;
+          bottom: 16px;
+          background: rgba(17,17,17,0.95);
+          color: #fff;
+          padding: 12px 16px;
+          border-radius: 8px;
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          z-index: 9999;
+          box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+          font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+          font-size: 14px;
+        }
+        #cookie-consent p { margin: 0; flex: 1; }
+        #cookie-consent .cc-actions { display: flex; gap: 8px; }
+        #cookie-consent button {
+          background: #fff; color: #111; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;
+        }
+        #cookie-consent button.secondary {
+          background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2);
+        }
+      `;
       document.head.appendChild(style);
     }
 
-    // inietta la logica fallback per creare il banner inline
-    if (!document.getElementById('cookie-consent')){
-      (function(){
-        var STORAGE_KEY = 'mt11_cookie_consent_v1';
-        function hasConsent(){ return localStorage.getItem(STORAGE_KEY) === 'accepted'; }
-        function setConsent(v){ localStorage.setItem(STORAGE_KEY, v ? 'accepted' : 'rejected'); }
-        function removeBanner(){ var e=document.getElementById('cookie-consent'); if(e) e.remove(); }
-        function onAccept(){ setConsent(true); removeBanner(); /* qui eventuale iniezione di analytics */ }
-        function onReject(){ setConsent(false); removeBanner(); }
-        if (!hasConsent()){
-          var d=document.createElement('div');
-          d.id='cookie-consent';
-          d.innerHTML = '<p>Usiamo cookie per migliorare l\\'esperienza e, con il tuo consenso, per analitica e pubblicità. Puoi accettare o rifiutare.</p><div class="cc-actions"><button id="cc-accept">Accetta</button><button id="cc-reject" class="secondary">Rifiuta</button></div>';
-          document.body.appendChild(d);
+    // Inject inline logic fallback if banner not present
+    if (!document.getElementById('cookie-consent')) {
+      (function() {
+        const STORAGE_KEY = 'mt11_cookie_consent_v1';
+
+        function hasConsent() {
+          return localStorage.getItem(STORAGE_KEY) === 'accepted';
+        }
+        function setConsent(value) {
+          localStorage.setItem(STORAGE_KEY, value ? 'accepted' : 'rejected');
+        }
+        function removeBanner() {
+          const el = document.getElementById('cookie-consent');
+          if (el) el.remove();
+        }
+        function onAccept() {
+          setConsent(true);
+          removeBanner();
+          // place for analytics injection after consent, if needed
+        }
+        function onReject() {
+          setConsent(false);
+          removeBanner();
+        }
+
+        if (!hasConsent()) {
+          const container = document.createElement('div');
+          container.id = 'cookie-consent';
+          container.innerHTML = `
+            <p>Usiamo cookie per migliorare l'esperienza e, con il tuo consenso, per analitica e pubblicità. Puoi accettare o rifiutare.</p>
+            <div class="cc-actions">
+              <button id="cc-accept">Accetta</button>
+              <button id="cc-reject" class="secondary">Rifiuta</button>
+            </div>
+          `;
+          document.body.appendChild(container);
           document.getElementById('cc-accept').addEventListener('click', onAccept);
           document.getElementById('cc-reject').addEventListener('click', onReject);
         }
       })();
     }
-  }, timeoutMs);
+  }, FALLBACK_TIMEOUT_MS);
 })();
 </script>
 </body>
