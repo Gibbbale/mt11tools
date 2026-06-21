@@ -22,11 +22,10 @@ const FORMATIONS = {
 function buildPlayersFromStorage() {
   const candidateKeys = ["ratingCalciatoreGiocatori", "ratingCalciatoreValori", "ratingCalciatoreGiocatori_v2"];
   let raw = null;
-  let foundKey = null;
   for (const k of candidateKeys) {
     const r = localStorage.getItem(k);
     if (!r) continue;
-    try { JSON.parse(r); raw = r; foundKey = k; break; } catch(e) { continue; }
+    try { JSON.parse(r); raw = r; break; } catch(e) { continue; }
   }
   if (!raw) return [];
 
@@ -91,6 +90,7 @@ function computeRatingsForPlayer(player) {
 // render players table
 function renderPlayersTable(players) {
   const tbody = document.querySelector("#players-table tbody");
+  if (!tbody) return;
   tbody.innerHTML = "";
   players.forEach((p, idx) => {
     const tr = document.createElement("tr");
@@ -122,7 +122,6 @@ function renderPlayersTable(players) {
   });
 }
 
-// fallback/utility: toggle selezione di tutti i checkbox nella players-table
 // toggle select all / none — considera solo le righe visibili (filtrate)
 function toggleSelectAll() {
   const tbody = document.querySelector('#players-table tbody');
@@ -132,7 +131,6 @@ function toggleSelectAll() {
     .filter(cb => {
       const tr = cb.closest('tr');
       if (!tr) return false;
-      // consideriamo visibile anche se non ha display:none (controllo computed style più robusto)
       const style = window.getComputedStyle(tr);
       return style.display !== 'none' && style.visibility !== 'hidden';
     });
@@ -269,21 +267,18 @@ function renderResult(res) {
   const ba = document.getElementById("bench-area");
   la.innerHTML = "<h4>Formazione suggerita (posizione - giocatore - rating)</h4>";
 
-  // Create table with colgroup: first column autosize, next two fixed (role + rating)
   const t = document.createElement("table");
   t.className = "lineup-table";
-  // colgroup: first col auto, next two cols fixed (e.g. 140px and 88px) or choose as needed
   const colgroup = document.createElement('colgroup');
-  const c1 = document.createElement('col'); // ruolo autosize
-  const c2 = document.createElement('col'); c2.style.width = '220px'; // Giocatore (fissa per uniformità)
-  const c3 = document.createElement('col'); c3.style.width = '88px';  // Rating
+  const c1 = document.createElement('col');
+  const c2 = document.createElement('col'); c2.style.width = '220px';
+  const c3 = document.createElement('col'); c3.style.width = '88px';
   colgroup.appendChild(c1); colgroup.appendChild(c2); colgroup.appendChild(c3);
   t.appendChild(colgroup);
 
   t.innerHTML = "<thead><tr><th>Posizione</th><th>Giocatore</th><th>Rating</th></tr></thead>";
   const tb = document.createElement("tbody");
 
-  // trova il massimo rating per evidenziare eventualmente
   const maxRating = Math.max(...res.lineup.map(x => x.rating || 0));
 
   res.lineup.forEach(item => {
@@ -291,23 +286,18 @@ function renderResult(res) {
     const roleClass = roleToClass(item.position);
     if (roleClass) tr.classList.add(roleClass);
 
-    // prima cella: ruolo (usa class role-cell per poterla colorare separatamente)
     const tdRole = document.createElement('td');
     tdRole.textContent = item.position || '-';
     tdRole.className = 'role-cell';
     tr.appendChild(tdRole);
 
-    // seconda cella: giocatore (nome)
     const tdName = document.createElement('td');
     tdName.textContent = item.player ? item.player.name : '-';
-    // limita overflow
     tdName.title = tdName.textContent;
     tr.appendChild(tdName);
 
-    // terza cella: rating
     const tdRating = document.createElement('td');
     tdRating.textContent = (item.rating || 0).toFixed(2);
-    // se vuoi evidenziare il massimo con classe selected-best, usa:
     if (item.rating === maxRating) tr.classList.add('selected-best');
     tr.appendChild(tdRating);
 
@@ -318,12 +308,10 @@ function renderResult(res) {
   la.appendChild(t);
   la.innerHTML += `<p class="small">Punteggio totale: ${res.totalScore.toFixed(2)}</p>`;
 
-  // PANCHINA
   ba.innerHTML = "<h4>Panchina</h4>";
   if (!res.bench || res.bench.length === 0) { ba.innerHTML += "<p>(nessuno)</p>"; return; }
   const tb2 = document.createElement("table");
   tb2.className = "lineup-table";
-  // colgroup per panchina (stesso schema)
   const colgroup2 = document.createElement('colgroup');
   colgroup2.appendChild(document.createElement('col'));
   const c2b = document.createElement('col'); c2b.style.width = '220px';
@@ -348,34 +336,53 @@ function renderResult(res) {
   ba.appendChild(tb2);
 }
 
-function initFormazioniPage() {
-	// Assicura che i listener esistano (duplica in modo sicuro)
-	if (document.getElementById('select-all')) document.getElementById('select-all').removeEventListener && null;
-	document.getElementById('select-all')?.addEventListener('click', toggleSelectAll);
-	document.getElementById('refresh-list')?.addEventListener('click', refreshList);
-	document.getElementById('suggest-btn')?.addEventListener('click', suggestFormation);
-// esempio: aggiornare lo stato quando ricarichi
+// Suggest formation: collects selected players, runs algorithm and renders result
+function suggestFormation() {
+  const all = buildPlayersFromStorage();
+  const tbody = document.querySelector('#players-table tbody');
+  const checkboxes = tbody ? Array.from(tbody.querySelectorAll('input[type="checkbox"]')) : [];
+  const selected = [];
+  const max = Number(document.getElementById('maxPlayers')?.value) || all.length;
+  const sourceArr = all.slice(0, max);
+  checkboxes.forEach((cb, idx) => {
+    if (cb.checked) {
+      const p = sourceArr[idx];
+      if (p) selected.push(p);
+    }
+  });
+  const playersToUse = selected.length ? selected : sourceArr;
+  if (playersToUse.length < 11) { alert('Servono almeno 11 giocatori.'); return; }
+
+  const formationKey = document.getElementById('formation')?.value || Object.keys(FORMATIONS)[0];
+  const roles = FORMATIONS[formationKey] || FORMATIONS[Object.keys(FORMATIONS)[0]];
+  const benchSize = Number(document.getElementById('benchSize')?.value) || 7;
+  const mode = document.getElementById('selectionMode')?.value || 'hungarian';
+
+  let res;
+  if (mode === 'hungarian') res = selectHungarian(playersToUse, roles, benchSize);
+  else if (mode === 'bestRating') res = selectGreedyByRole(playersToUse, roles, benchSize);
+  else res = selectByAverageThenHungarian(playersToUse, roles, benchSize);
+
+  renderResult(res);
+}
+
 function refreshList() {
   const all = buildPlayersFromStorage();
-  const max = Number(document.getElementById('maxPlayers').value) || all.length;
+  const max = Number(document.getElementById('maxPlayers')?.value) || all.length;
   renderPlayersTable(all.slice(0, max));
-  document.getElementById('players-status').textContent = `${all.length} giocatori trovati.`;
+  const statusEl = document.getElementById('players-status');
+  if (statusEl) statusEl.textContent = `${all.length} giocatori trovati.`;
 }
+
+function initFormazioniPage() {
   const refreshBtn = document.getElementById("refresh-list");
   const suggestBtn = document.getElementById("suggest-btn");
   const selectAllBtn = document.getElementById("select-all");
   const filterInput = document.getElementById("filterName");
 
+  if (selectAllBtn) selectAllBtn.addEventListener("click", toggleSelectAll);
   if (refreshBtn) refreshBtn.addEventListener("click", refreshList);
   if (suggestBtn) suggestBtn.addEventListener("click", suggestFormation);
-
-  if (selectAllBtn) selectAllBtn.addEventListener("click", () => {
-    const tbody = document.querySelector('#players-table tbody');
-    if (!tbody) return;
-    const checkboxes = tbody.querySelectorAll('input[type=checkbox]');
-    const anyUnchecked = Array.from(checkboxes).some(cb => !cb.checked);
-    checkboxes.forEach(cb => cb.checked = anyUnchecked);
-  });
 
   if (filterInput) {
     let timer;
@@ -396,9 +403,10 @@ function refreshList() {
   refreshList();
 }
 
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initFormazioniPage);
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initFormazioniPage);
 else initFormazioniPage();
-// Esponi le funzioni principali globalmente per i fallback inline (evita ReferenceError)
+
+// Esponi le funzioni principali sullo scope globale per i fallback inline
 window.toggleSelectAll = toggleSelectAll;
 window.refreshList = refreshList;
 window.suggestFormation = suggestFormation;
