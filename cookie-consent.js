@@ -1,14 +1,9 @@
-/* cookie-consent.js - banner cookie semplice che attiva script su consenso */
+/* consent-banner.js - banner cookie semplice che attiva script su consenso (fallback per adblock) */
 (function(){
   const STORAGE_KEY = 'mt11_cookie_consent_v1';
 
-  function hasConsent(){
-    return localStorage.getItem(STORAGE_KEY) === 'accepted';
-  }
-
-  function setConsent(value){
-    localStorage.setItem(STORAGE_KEY, value ? 'accepted' : 'rejected');
-  }
+  function hasConsent(){ return localStorage.getItem(STORAGE_KEY) === 'accepted'; }
+  function setConsent(value){ localStorage.setItem(STORAGE_KEY, value ? 'accepted' : 'rejected'); }
 
   function injectScript(src, attrs = {}) {
     const s = document.createElement('script');
@@ -18,27 +13,20 @@
     document.head.appendChild(s);
   }
 
-  function onAccept() {
+  function onAccept(){
     setConsent(true);
     removeBanner();
-    // Esempi (decommenta / sostituisci gli ID se vuoi che inietti automaticamente):
+    // Inserisci qui eventuale iniezione di analytics dopo consenso (decommenta e sostituisci)
     // injectScript('https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX');
-    // window.dataLayer = window.dataLayer || [];
-    // function gtag(){dataLayer.push(arguments);} 
-    // gtag('js', new Date());
-    // gtag('config', 'G-XXXXXXXXXX');
-
-    // injectScript('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', { 'data-ad-client': 'ca-pub-XXXXXXXX' });
   }
 
-  function onReject() {
+  function onReject(){
     setConsent(false);
     removeBanner();
   }
 
   function removeBanner(){
-    const el = document.getElementById('cookie-consent');
-    if(el) el.remove();
+    const el = document.getElementById('cookie-consent'); if(el) el.remove();
   }
 
   function renderBanner(){
@@ -55,13 +43,8 @@
       </div>
     `;
     document.body.appendChild(div);
-
-    document.getElementById('cc-accept').addEventListener('click', function(){
-      onAccept();
-    });
-    document.getElementById('cc-reject').addEventListener('click', function(){
-      onReject();
-    });
+    document.getElementById('cc-accept').addEventListener('click', onAccept);
+    document.getElementById('cc-reject').addEventListener('click', onReject);
   }
 
   if(document.readyState === 'loading'){
