@@ -265,7 +265,6 @@ function roleToClass(role) {
 function renderResult(res) {
   const la = document.getElementById("lineup-area");
   const ba = document.getElementById("bench-area");
-  la.innerHTML = "<h4>Formazione suggerita (posizione - giocatore - rating)</h4>";
 
   const t = document.createElement("table");
   t.className = "lineup-table";
