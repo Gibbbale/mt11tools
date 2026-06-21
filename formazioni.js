@@ -329,6 +329,13 @@ function renderResult(res) {
 }
 
 function initFormazioniPage() {
+// esempio: aggiornare lo stato quando ricarichi
+function refreshList() {
+  const all = buildPlayersFromStorage();
+  const max = Number(document.getElementById('maxPlayers').value) || all.length;
+  renderPlayersTable(all.slice(0, max));
+  document.getElementById('players-status').textContent = `${all.length} giocatori trovati.`;
+}
   const refreshBtn = document.getElementById("refresh-list");
   const suggestBtn = document.getElementById("suggest-btn");
   const selectAllBtn = document.getElementById("select-all");
