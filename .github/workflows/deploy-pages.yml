@@ -21,12 +21,15 @@ jobs:
         run: |
           rm -rf site
           mkdir -p site
-          # Copy top-level static files (html/css/js/txt/xml)
-          cp -v -- *.html *.css *.js *.txt *.xml site 2>/dev/null || true
-          # Copy common static directories if present
+
+          # Copia i file top-level statici (html/css/js/txt/xml/ico/png)
+          cp -v -- *.html *.css *.js *.txt *.xml *.ico *.png site 2>/dev/null || true
+
+          # Copia intere directory (preserva la struttura, es. site/assets/...)
           for d in assets static public dist build; do
             if [ -d "$d" ]; then
-              cp -R "$d"/* site/ || true
+              mkdir -p "site/$d"
+              cp -R "$d"/* "site/$d"/ || true
             fi
           done
 
