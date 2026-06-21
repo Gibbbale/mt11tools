@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>Formazioni - MT11</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .players-table, .lineup-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    .players-table th, .players-table td, .lineup-table th, .lineup-table td {
+      border: 1px solid #ccc; padding: 6px 8px; text-align: left;
+    }
+    .controls { display:flex; gap:8px; align-items:center; margin:8px 0; flex-wrap:wrap;}
+    .small { font-size:0.9em; color:#666; }
+    .selected-best { background:#c8f7c5; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <nav class="navigazione">
+    <a class="pulsante secondario" href="index.html">Home</a>
+    <a class="pulsante secondario" href="rating.html">Vai a Rating</a>
+  </nav>
+
+  <h2>Formazioni</h2>
+  <p class="small">I giocatori vengono caricati da quelli salvati nella pagina "Calcolo rating". Se vuoi modificare i dati, apri Rating → salva i giocatori.</p>
+
+  <section>
+    <h3>Giocatori disponibili</h3>
+    <div class="controls">
+      <label for="maxPlayers">Usa fino a:</label>
+      <select id="maxPlayers">
+        <option value="18">Tutti disponibili</option>
+        <option value="11">Solo 11</option>
+        <option value="16">16</option>
+        <option value="18" selected>18</option>
+      </select>
+      <button id="refresh-list">Ricarica lista</button>
+      <span class="small">Seleziona/deseleziona per includere il giocatore nella scelta della formazione.</span>
+    </div>
+
+    <table class="players-table" id="players-table">
+      <thead><tr><th>Usa</th><th>Nome</th><th>Valori (P,C,Pas,T,V,F)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>Seleziona formazione</h3>
+    <div class="controls">
+      <label for="formation">Formazione:</label>
+      <select id="formation">
+        <option value="4-3-3">4-3-3</option>
+        <option value="4-4-2">4-4-2</option>
+        <option value="3-5-2">3-5-2</option>
+        <option value="4-2-3-1">4-2-3-1</option>
+      </select>
+      <label for="benchSize">Panchina:</label>
+      <select id="benchSize"><option>7</option><option>6</option><option>5</option></select>
+      <button id="suggest-btn">Suggerisci formazione</button>
+    </div>
+  </section>
+
+  <section>
+    <h3>Risultato</h3>
+    <div id="result-area">
+      <div id="lineup-area"></div>
+      <div id="bench-area"></div>
+    </div>
+  </section>
+  <script src="formazioni.js" defer></script>
+</body>
+</html>
