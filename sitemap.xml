@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://gibbbale.github.io/mt11tools/</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://gibbbale.github.io/mt11tools/index.html</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://gibbbale.github.io/mt11tools/allenamenti.html</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://gibbbale.github.io/mt11tools/rating.html</loc>
+    <changefreq>monthly</changefreq>
+  </url>
+</urlset>
