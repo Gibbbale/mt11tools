@@ -4,6 +4,20 @@
 
 const PLAYERS_KEY = "ratingCalciatoreGiocatori";
 
+// FORMAZIONI richieste (lista posizioni; aggiorneremo se mi fornisci ruoli specifici per posizione)
+const FORMATIONS = {
+  "3-5-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Centrocampista","Centrocampista","Centrocampista","Ala","Ala","Punta","Punta"],
+  "4-4-2": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Punta","Punta"],
+  "4-3-3": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Ala","Punta","Ala"],
+  "4-5-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Punta"],
+  "5-3-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino","Centrocampista","Centrocampista","Centrocampista","Punta","Punta"],
+  "5-4-1": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Punta"],
+  "3-4-3": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Ala","Punta","Ala"],
+  "4-3-2-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Trequartista","Trequartista","Punta"],
+  "4-2-3-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Trequartista","Trequartista","Trequartista","Punta"],
+  "3-4-1-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Trequartista","Punta","Punta"]
+};
+
 function buildPlayersFromStorage() {
   const raw = localStorage.getItem(PLAYERS_KEY);
   if (!raw) return [];
@@ -30,19 +44,19 @@ function buildPlayersFromStorage() {
   }
 }
 
-// compute ratings using same logic as script.js (weights = ruoli array)
+// compute ratings using the ruoli weights (script.js must define `ruoli`)
 function computeRatingsForPlayer(player) {
   const attrsOrder = ["parata","contrasto","passaggio","tiro","velocita","forza"];
   const ratings = {};
   if (!Array.isArray(ruoli)) return ratings;
   ruoli.forEach(([roleName, weights]) => {
-    let somma = 0;
+    let sum = 0;
     for (let i = 0; i < attrsOrder.length; i++) {
       const val = Number(player.valori[attrsOrder[i]]) || 0;
       const peso = Number(weights[i]) || 0;
-      somma += val * peso;
+      sum += val * peso;
     }
-    const rating = Math.floor((somma / 250) * 100) / 100;
+    const rating = Math.floor((sum / 250) * 100) / 100;
     ratings[roleName] = rating;
   });
   const vals = Object.values(ratings);
@@ -51,6 +65,7 @@ function computeRatingsForPlayer(player) {
   return ratings;
 }
 
+// render players table
 function renderPlayersTable(players) {
   const tbody = document.querySelector("#players-table tbody");
   tbody.innerHTML = "";
@@ -84,7 +99,7 @@ function renderPlayersTable(players) {
   });
 }
 
-// Hungarian algorithm implementation
+// Hungarian solver (rows <= cols)
 function hungarianSolve(cost) {
   const INF = 1e12;
   let n = cost.length, m = cost[0].length;
@@ -123,6 +138,7 @@ function hungarianSolve(cost) {
   return { assignment, value: -v[0] };
 }
 
+// selection algorithms
 function selectHungarian(players, formationRoles, benchSize) {
   const P = formationRoles.length, N = players.length;
   const ratingMatrix = Array.from({length: P}, () => Array(N).fill(0));
@@ -199,6 +215,7 @@ function selectByAverageThenHungarian(players, formationRoles, benchSize) {
   return selectHungarian(subset, formationRoles, benchSize);
 }
 
+// render result
 function renderResult(res) {
   const la = document.getElementById("lineup-area");
   const ba = document.getElementById("bench-area");
@@ -256,13 +273,7 @@ function suggestFormation() {
   if (playersToUse.length < 11) { alert("Servono almeno 11 giocatori."); return; }
 
   const formationKey = document.getElementById("formation").value;
-  const formations = {
-    "4-3-3": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Ala","Punta","Ala"],
-    "4-4-2": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Punta","Punta"],
-    "3-5-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino","Centrocampista","Centrocampista","Centrocampista","Ala","Punta","Punta"],
-    "4-2-3-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Trequartista","Trequartista","Trequartista","Punta"]
-  };
-  const roles = formations[formationKey];
+  const roles = FORMATIONS[formationKey];
   const benchSize = Number(document.getElementById("benchSize").value) || 7;
   const mode = document.getElementById("selectionMode").value;
 

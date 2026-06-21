@@ -5,95 +5,102 @@
   <title>Formazioni - MT11</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="consent-banner.css">
-  <!-- non inserire CSS specifico qui: usa style.css (blocco fornito sotto) -->
 </head>
 <body>
-  <nav class="navigazione" style="margin-bottom:14px;">
+  <nav class="navigazione">
     <a class="pulsante secondario" href="index.html">Home</a>
     <a class="pulsante secondario" href="rating.html">Vai a Rating</a>
   </nav>
 
-  <h2>Formazioni</h2>
-  <p class="small">I giocatori vengono caricati dai salvataggi della pagina "Calcolo rating". Modifica o salva i giocatori su <a class="pulsante secondario" href="rating.html">Rating</a> se necessario.</p>
+  <main>
+    <h2>Formazioni</h2>
+    <p class="small">I giocatori vengono caricati da quelli salvati nella pagina "Calcolo rating". Modifica o salva i giocatori su Rating se necessario.</p>
 
-  <section>
-    <h3>Giocatori disponibili</h3>
+    <section>
+      <h3>Giocatori disponibili</h3>
 
-    <div class="controls toolbar">
-      <label for="maxPlayers" class="small">Usa fino a:</label>
-      <select id="maxPlayers" class="search-input" aria-label="Limite giocatori">
-        <option value="18">Tutti disponibili (18)</option>
-        <option value="16">16</option>
-        <option value="11">Solo 11</option>
-      </select>
+      <div class="controls toolbar">
+        <label for="maxPlayers" class="small">Usa fino a:</label>
+        <select id="maxPlayers" class="search-input" aria-label="Limite giocatori">
+          <option value="18">Tutti disponibili (18)</option>
+          <option value="16">16</option>
+          <option value="11">Solo 11</option>
+        </select>
 
-      <label for="selectionMode" class="small">Modalità:</label>
-      <select id="selectionMode" class="search-input" aria-label="Modalità selezione">
-        <option value="hungarian">Migliore per formazione (Hungarian)</option>
-        <option value="bestRating">Migliore per rating</option>
-        <option value="bestAverage">Migliore per media</option>
-      </select>
+        <label for="selectionMode" class="small">Modalità:</label>
+        <select id="selectionMode" class="search-input" aria-label="Modalità selezione">
+          <option value="hungarian">Migliore per formazione (Hungarian)</option>
+          <option value="bestRating">Migliore per rating</option>
+          <option value="bestAverage">Migliore per media</option>
+        </select>
 
-      <label class="small" for="filterName">Cerca:</label>
-      <input id="filterName" class="search-input" placeholder="Cerca per nome..." />
+        <label class="small" for="filterName">Cerca:</label>
+        <input id="filterName" class="search-input" placeholder="Cerca per nome..." />
 
-      <button id="select-all" class="pulsante">Seleziona tutto</button>
-      <button id="refresh-list" class="pulsante">Ricarica lista</button>
+        <button id="select-all" class="pulsante">Seleziona tutto</button>
+        <button id="refresh-list" class="pulsante">Ricarica lista</button>
 
-      <span class="small" style="margin-left:auto;">Seleziona i giocatori da includere nella scelta della formazione.</span>
-    </div>
+        <span class="small" style="margin-left:auto;">Seleziona i giocatori da includere nella scelta della formazione.</span>
+      </div>
 
-    <div class="table-wrap" role="region" aria-label="Tabella giocatori">
-      <table class="players-table" id="players-table" aria-describedby="players-desc">
-        <caption id="players-desc" style="display:none">Tabella dei giocatori disponibili con i valori Parata, Contrasto, Passaggio, Tiro, Velocità e Forza</caption>
-        <thead>
-          <tr>
-            <th class="checkbox-col">Usa</th>
-            <th class="name-col">Nome</th>
-            <th class="stat-col">Parata</th>
-            <th class="stat-col">Contrasto</th>
-            <th class="stat-col">Passaggio</th>
-            <th class="stat-col">Tiro</th>
-            <th class="stat-col">Velocità</th>
-            <th class="stat-col">Forza</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
+      <div class="table-wrap" role="region" aria-label="Tabella giocatori">
+        <table class="players-table" id="players-table" aria-describedby="players-desc">
+          <caption id="players-desc" style="display:none">Tabella dei giocatori disponibili con i valori Parata, Contrasto, Passaggio, Tiro, Velocità e Forza</caption>
+          <thead>
+            <tr>
+              <th class="checkbox-col">Usa</th>
+              <th class="name-col">Nome</th>
+              <th class="stat-col">Parata</th>
+              <th class="stat-col">Contrasto</th>
+              <th class="stat-col">Passaggio</th>
+              <th class="stat-col">Tiro</th>
+              <th class="stat-col">Velocità</th>
+              <th class="stat-col">Forza</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
 
-  <section style="margin-top:18px;">
-    <h3>Seleziona formazione</h3>
-    <div class="controls">
-      <label for="formation" class="small">Formazione:</label>
-      <select id="formation" class="search-input">
-        <option value="4-3-3">4-3-3</option>
-        <option value="4-4-2">4-4-2</option>
-        <option value="3-5-2">3-5-2</option>
-        <option value="4-2-3-1">4-2-3-1</option>
-      </select>
+    <section>
+      <h3>Seleziona formazione</h3>
+      <div class="controls">
+        <label for="formation" class="small">Formazione:</label>
+        <select id="formation" class="search-input">
+          <option value="3-5-2">3-5-2</option>
+          <option value="4-4-2">4-4-2</option>
+          <option value="4-3-3">4-3-3</option>
+          <option value="4-5-1">4-5-1</option>
+          <option value="5-3-2">5-3-2</option>
+          <option value="5-4-1">5-4-1</option>
+          <option value="3-4-3">3-4-3</option>
+          <option value="4-3-2-1">4-3-2-1</option>
+          <option value="4-2-3-1">4-2-3-1</option>
+          <option value="3-4-1-2">3-4-1-2</option>
+        </select>
 
-      <label for="benchSize" class="small">Panchina:</label>
-      <select id="benchSize" class="search-input"><option>7</option><option>6</option><option>5</option></select>
+        <label for="benchSize" class="small">Panchina:</label>
+        <select id="benchSize" class="search-input"><option>7</option><option>6</option><option>5</option></select>
 
-      <button id="suggest-btn" class="pulsante">Suggerisci formazione</button>
-    </div>
-  </section>
+        <button id="suggest-btn" class="pulsante">Suggerisci formazione</button>
+      </div>
+    </section>
 
-  <section style="margin-top:18px;">
-    <h3>Risultato</h3>
-    <div id="result-area">
-      <div id="lineup-area"></div>
-      <div id="bench-area" style="margin-top:10px;"></div>
-    </div>
-  </section>
+    <section>
+      <h3>Risultato</h3>
+      <div id="result-area">
+        <div id="lineup-area"></div>
+        <div id="bench-area" style="margin-top:10px;"></div>
+      </div>
+    </section>
+  </main>
 
   <!-- script.js contiene la definizione dei pesi (ruoli) usata per calcolare i rating per ruolo -->
   <script src="script.js" defer></script>
   <script src="formazioni.js" defer></script>
 
-  <!-- Cookie banner dynamic loader (same as in other pages) -->
+  <!-- Cookie banner dynamic loader (fallback inline like other pages) -->
   <script>
   (function() {
     const SCRIPT_SRC = 'consent-banner.js';
@@ -122,31 +129,11 @@
         const style = document.createElement('style');
         style.id = 'consent-banner-inline-style';
         style.textContent = `
-          #cookie-consent {
-            position: fixed;
-            left: 16px;
-            right: 16px;
-            bottom: 16px;
-            background: rgba(17,17,17,0.95);
-            color: #fff;
-            padding: 12px 16px;
-            border-radius: 8px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            z-index: 9999;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            font-size: 14px;
-          }
+          #cookie-consent { position: fixed; left: 16px; right: 16px; bottom: 16px; background: rgba(17,17,17,0.95); color: #fff; padding: 12px 16px; border-radius: 8px; display: flex; gap: 12px; align-items: center; z-index: 9999; box-shadow: 0 6px 18px rgba(0,0,0,0.3); font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; font-size: 14px; }
           #cookie-consent p { margin: 0; flex: 1; }
           #cookie-consent .cc-actions { display: flex; gap: 8px; }
-          #cookie-consent button {
-            background: #fff; color: #111; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;
-          }
-          #cookie-consent button.secondary {
-            background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2);
-          }
+          #cookie-consent button { background: #fff; color: #111; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+          #cookie-consent button.secondary { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
         `;
         document.head.appendChild(style);
       }
@@ -154,26 +141,11 @@
       if (!document.getElementById('cookie-consent')) {
         (function() {
           const STORAGE_KEY = 'mt11_cookie_consent_v1';
-
-          function hasConsent() {
-            return localStorage.getItem(STORAGE_KEY) === 'accepted';
-          }
-          function setConsent(value) {
-            localStorage.setItem(STORAGE_KEY, value ? 'accepted' : 'rejected');
-          }
-          function removeBanner() {
-            const el = document.getElementById('cookie-consent');
-            if (el) el.remove();
-          }
-          function onAccept() {
-            setConsent(true);
-            removeBanner();
-          }
-          function onReject() {
-            setConsent(false);
-            removeBanner();
-          }
-
+          function hasConsent() { return localStorage.getItem(STORAGE_KEY) === 'accepted'; }
+          function setConsent(value) { localStorage.setItem(STORAGE_KEY, value ? 'accepted' : 'rejected'); }
+          function removeBanner() { const el = document.getElementById('cookie-consent'); if (el) el.remove(); }
+          function onAccept() { setConsent(true); removeBanner(); }
+          function onReject() { setConsent(false); removeBanner(); }
           if (!hasConsent()) {
             const container = document.createElement('div');
             container.id = 'cookie-consent';
@@ -193,6 +165,5 @@
     }, FALLBACK_TIMEOUT_MS);
   })();
   </script>
-
 </body>
 </html>
