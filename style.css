@@ -347,3 +347,82 @@ th {
 .tabella-pesi tbody tr:nth-child(odd) {
   background: none; /* lascia la nostra colorazione esplicita / bianco di default */
 }
+
+/* ---------------------------
+   Tabella pesi e lineup: colonne stat uguali, ruolo autosize
+   --------------------------- */
+
+/* Usa table-layout fixed per rispettare le larghezze delle colonne specificate nel colgroup.
+   Lasciando la prima <col> senza width la colonna ruolo rimane autosize. */
+.tabella-pesi,
+.lineup-table {
+  table-layout: fixed;
+}
+
+/* Assicura che le colonne con width fissa non vadano a capo e abbiano overflow gestito */
+.tabella-pesi td,
+.tabella-pesi th,
+.lineup-table td,
+.lineup-table th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Riutilizzo dei colori role-* (già definiti) anche per la lineup */
+.lineup-table tbody tr.role-portiere td:first-child,
+.lineup-table tbody tr.role-portiere td.role-cell {
+  background: #F9E79F;
+}
+
+.lineup-table tbody tr.role-difensore-centrale td:first-child,
+.lineup-table tbody tr.role-difensore-centrale td.role-cell {
+  background: #AED6F1;
+}
+
+.lineup-table tbody tr.role-terzino td:first-child,
+.lineup-table tbody tr.role-terzino td.role-cell {
+  background: #D6EAF8;
+}
+
+.lineup-table tbody tr.role-terzino-fluidificante td:first-child,
+.lineup-table tbody tr.role-terzino-fluidificante td.role-cell {
+  background: #D5F5E3;
+}
+
+.lineup-table tbody tr.role-mediano td:first-child,
+.lineup-table tbody tr.role-mediano td.role-cell {
+  background: #D0F0C0;
+}
+
+.lineup-table tbody tr.role-centrocampista td:first-child,
+.lineup-table tbody tr.role-centrocampista td.role-cell {
+  background: #ABEBC6;
+}
+
+.lineup-table tbody tr.role-trequartista td:first-child,
+.lineup-table tbody tr.role-trequartista td.role-cell {
+  background: #F5C6E7;
+}
+
+.lineup-table tbody tr.role-ala td:first-child,
+.lineup-table tbody tr.role-ala td.role-cell {
+  background: #FADBD8;
+}
+
+.lineup-table tbody tr.role-punta td:first-child,
+.lineup-table tbody tr.role-punta td.role-cell {
+  background: #F5B7B1;
+}
+
+/* mantiene il testo nero sopra i colori */
+.lineup-table td.role-cell,
+.lineup-table td:first-child {
+  color: #000;
+  font-weight: 600;
+}
+
+/* regola il padding/narrow su lineup se vuoi differente dalla players table */
+.lineup-table th, .lineup-table td {
+  padding: 8px 10px;
+}
