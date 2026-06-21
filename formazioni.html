@@ -44,7 +44,18 @@
       </div>
 
       <div class="table-wrap" role="region" aria-label="Tabella giocatori">
+	  <div id="players-status" aria-live="polite" class="small" style="margin-bottom:8px;"></div>
         <table class="players-table" id="players-table" aria-describedby="players-desc">
+		<colgroup>
+			<col style="width:56px">   <!-- checkbox -->
+			<col>                      <!-- nome: auto -->
+			<col style="width:88px">   <!-- parata -->
+			<col style="width:88px">   <!-- contrasto -->
+			<col style="width:88px">   <!-- passaggio -->
+			<col style="width:88px">   <!-- tiro -->
+			<col style="width:88px">   <!-- velocità -->
+			<col style="width:88px">   <!-- forza -->
+		</colgroup>
           <caption id="players-desc" style="display:none">Tabella dei giocatori disponibili con i valori Parata, Contrasto, Passaggio, Tiro, Velocità e Forza</caption>
           <thead>
             <tr>
@@ -58,7 +69,11 @@
               <th class="stat-col">Forza</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+			<tr class="no-players">
+			<td colspan="8" style="text-align:center; padding:12px;">Nessun giocatore trovato. Apri "Calcolo rating" e salva i giocatori, poi clicca "Ricarica lista".</td>
+			</tr>
+		</tbody>
         </table>
       </div>
     </section>
