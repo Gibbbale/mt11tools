@@ -248,3 +248,100 @@ th {
 }
 .spiegazione-calcolo p { margin: 5px 0 11px; color: #17231d; }
 .spiegazione-calcolo .nota { font-size: 0.9em; color: #aaa; margin-top: 8px; }
+/* ===========================
+   Styling specifico per tabella pesi (calcolo ranking)
+   - celle bianche di default
+   - header rimane distinto (prima riga)
+   - colonna ruolo e celle con 100 colorate per ruolo
+   =========================== */
+
+.tabella-pesi { font-family: Arial, sans-serif; border-collapse: collapse; width: 100%; }
+
+/* tutte le celle bianche e testo nero per uniformità */
+.tabella-pesi td,
+.tabella-pesi th {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  text-align: center;
+  font-weight: normal;
+}
+
+/* header (prima riga) rimane distinto: leggermente giallino */
+.tabella-pesi thead th {
+  background: #F9E79F; /* header light yellow */
+  color: #000;
+  font-weight: 700;
+}
+
+/* colonna ruolo: allineare testo a sinistra per leggibilità */
+.tabella-pesi td:first-child { text-align: left; padding-left: 10px; }
+
+/* --- colori per ruolo (colore della cella ruolo e delle celle .max) --- */
+/* Portiere: giallo */
+.tabella-pesi tbody tr.role-portiere td:first-child,
+.tabella-pesi tbody tr.role-portiere td.max {
+  background: #F9E79F;
+}
+
+/* Difensore Centrale: blu */
+.tabella-pesi tbody tr.role-difensore-centrale td:first-child,
+.tabella-pesi tbody tr.role-difensore-centrale td.max {
+  background: #AED6F1;
+}
+
+/* Terzino: azzurro chiaro */
+.tabella-pesi tbody tr.role-terzino td:first-child,
+.tabella-pesi tbody tr.role-terzino td.max {
+  background: #D6EAF8;
+}
+
+/* Terzino Fluidificante: verde pallido */
+.tabella-pesi tbody tr.role-terzino-fluidificante td:first-child,
+.tabella-pesi tbody tr.role-terzino-fluidificante td.max {
+  background: #D5F5E3;
+}
+
+/* Mediano: verde chiaro */
+.tabella-pesi tbody tr.role-mediano td:first-child,
+.tabella-pesi tbody tr.role-mediano td.max {
+  background: #D0F0C0;
+}
+
+/* Centrocampista: verde */
+.tabella-pesi tbody tr.role-centrocampista td:first-child,
+.tabella-pesi tbody tr.role-centrocampista td.max {
+  background: #ABEBC6;
+}
+
+/* Trequartista: rosa chiaro */
+.tabella-pesi tbody tr.role-trequartista td:first-child,
+.tabella-pesi tbody tr.role-trequartista td.max {
+  background: #F5C6E7;
+}
+
+/* Ala: salmone / rosa tenue */
+.tabella-pesi tbody tr.role-ala td:first-child,
+.tabella-pesi tbody tr.role-ala td.max {
+  background: #FADBD8;
+}
+
+/* Punta: rosso chiaro */
+.tabella-pesi tbody tr.role-punta td:first-child,
+.tabella-pesi tbody tr.role-punta td.max {
+  background: #F5B7B1;
+}
+
+/* assicurati che il testo rimanga nero sulle celle colorate */
+.tabella-pesi td.max,
+.tabella-pesi td:first-child {
+  color: #000 !important;
+  font-weight: 600;
+}
+
+/* opzionale: rimuovi striping se presente */
+.tabella-pesi tbody tr:nth-child(even),
+.tabella-pesi tbody tr:nth-child(odd) {
+  background: none; /* lascia la nostra colorazione esplicita / bianco di default */
+}
