@@ -122,6 +122,16 @@ function renderPlayersTable(players) {
   });
 }
 
+// fallback/utility: toggle selezione di tutti i checkbox nella players-table
+function toggleSelectAll() {
+  const tbody = document.querySelector('#players-table tbody');
+  if (!tbody) return;
+  const checkboxes = tbody.querySelectorAll('input[type="checkbox"]');
+  if (!checkboxes || checkboxes.length === 0) return;
+  const anyUnchecked = Array.from(checkboxes).some(cb => !cb.checked);
+  checkboxes.forEach(cb => cb.checked = anyUnchecked);
+}
+
 // Hungarian solver (rows <= cols)
 function hungarianSolve(cost) {
   const INF = 1e12;
@@ -329,6 +339,11 @@ function renderResult(res) {
 }
 
 function initFormazioniPage() {
+	// Assicura che i listener esistano (duplica in modo sicuro)
+	if (document.getElementById('select-all')) document.getElementById('select-all').removeEventListener && null;
+	document.getElementById('select-all')?.addEventListener('click', toggleSelectAll);
+	document.getElementById('refresh-list')?.addEventListener('click', refreshList);
+	document.getElementById('suggest-btn')?.addEventListener('click', suggestFormation);
 // esempio: aggiornare lo stato quando ricarichi
 function refreshList() {
   const all = buildPlayersFromStorage();
