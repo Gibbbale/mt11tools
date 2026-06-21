@@ -18,30 +18,53 @@ const FORMATIONS = {
   "3-4-1-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Trequartista","Punta","Punta"]
 };
 
+// Robust buildPlayersFromStorage: prova più chiavi e più formati
 function buildPlayersFromStorage() {
-  const raw = localStorage.getItem(PLAYERS_KEY);
+  const candidateKeys = ["ratingCalciatoreGiocatori", "ratingCalciatoreValori", "ratingCalciatoreGiocatori_v2"];
+  let raw = null;
+  let foundKey = null;
+  for (const k of candidateKeys) {
+    const r = localStorage.getItem(k);
+    if (!r) continue;
+    try { JSON.parse(r); raw = r; foundKey = k; break; } catch(e) { continue; }
+  }
   if (!raw) return [];
+
   try {
     const saved = JSON.parse(raw);
     if (!Array.isArray(saved)) return [];
-    return saved.map(g => {
-      const v = g.valori || {};
+    return saved.map((g, index) => {
+      // supporta vari formati
+      const v = g.valori || g.vals || g.values || g.val || {};
+      const id = g.id || g.ID || g.key || `gioc-${index}`;
+      const name = g.nome || g.name || g.nomeGiocatore || g.playerName || `Giocatore ${index+1}`;
       return {
-        id: g.id,
-        name: g.nome || g.name || "Giocatore",
+        id: id,
+        name: name,
         valori: {
-          parata: Number(v.parata) || 0,
-          contrasto: Number(v.contrasto) || 0,
-          passaggio: Number(v.passaggio) || 0,
-          tiro: Number(v.tiro) || 0,
-          velocita: Number(v.velocita) || 0,
-          forza: Number(v.forza) || 0
+          parata: parseFloatSafe(v.parata, v.P, v.p),
+          contrasto: parseFloatSafe(v.contrasto, v.C, v.contrast),
+          passaggio: parseFloatSafe(v.passaggio, v.Pas, v.pass),
+          tiro: parseFloatSafe(v.tiro, v.T, v.t),
+          velocita: parseFloatSafe(v.velocita, v.V, v.vel),
+          forza: parseFloatSafe(v.forza, v.F, v.for)
         }
       };
     });
   } catch (e) {
+    console.error('buildPlayersFromStorage parse error', e);
     return [];
   }
+}
+
+function parseFloatSafe() {
+  for (let i = 0; i < arguments.length; i++) {
+    const a = arguments[i];
+    if (a === undefined || a === null) continue;
+    const n = Number(a);
+    if (!Number.isNaN(n)) return n;
+  }
+  return 0;
 }
 
 // compute ratings using the ruoli weights (script.js must define `ruoli`)
