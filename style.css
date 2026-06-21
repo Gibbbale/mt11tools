@@ -249,7 +249,7 @@ th {
 .spiegazione-calcolo p { margin: 5px 0 11px; color: #17231d; }
 .spiegazione-calcolo .nota { font-size: 0.9em; color: #aaa; margin-top: 8px; }
 
-/* --- Formazioni page styles (append here) --- */
+/* Formazioni page styles */
 :root{
   --table-bg: #0f0f0f;
   --cell-border: #2b2b2b;
@@ -285,7 +285,7 @@ table.lineup-table th:last-child, table.lineup-table td:last-child { border-righ
 
 .checkbox-col { width:56px; text-align:center; }
 .name-col { width: 260px; }
-.stat-col { width: 88px; text-align:center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, \"Roboto Mono\", monospace; color:#e6f0e6; }
+.stat-col { width: 88px; text-align:center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; color:#e6f0e6; }
 
 tbody tr:nth-child(odd) { background: transparent; }
 tbody tr:nth-child(even) { background: var(--row-alt); }
@@ -303,5 +303,4 @@ tbody tr:hover { background: rgba(200,247,197,0.04); }
   .stat-col { width:64px; font-size:0.86rem; }
 }
 
-/* search input style */
 .search-input { padding:6px 8px; border-radius:6px; border:1px solid #2b2b2b; background:#0b0b0b; color:#eee; }
