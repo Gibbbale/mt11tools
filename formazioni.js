@@ -4,7 +4,7 @@
 
 const PLAYERS_KEY = "ratingCalciatoreGiocatori";
 
-// FORMAZIONI richieste (lista posizioni; aggiorneremo se mi fornisci ruoli specifici per posizione)
+// FORMAZIONI richieste (lista posizioni)
 const FORMATIONS = {
   "3-5-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Centrocampista","Centrocampista","Centrocampista","Ala","Ala","Punta","Punta"],
   "4-4-2": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Punta","Punta"],
