@@ -1,5 +1,6 @@
 // formazioni.js
-// Richiede: script.js già caricato (contiene `ruoli` array con [roleName, weightsArray])
+// Usa: script.js deve essere caricato (definisce `ruoli` array)
+// Key localStorage: ratingCalciatoreGiocatori
 
 const PLAYERS_KEY = "ratingCalciatoreGiocatori";
 
@@ -29,8 +30,7 @@ function buildPlayersFromStorage() {
   }
 }
 
-// Calcola rating per ruolo (usa `ruoli` definito in script.js)
-// La formula replica quella di script.js: somma(peso_i * valore_i) -> normalizza con 250 e arrotonda
+// compute ratings using same logic as script.js (weights = ruoli array)
 function computeRatingsForPlayer(player) {
   const attrsOrder = ["parata","contrasto","passaggio","tiro","velocita","forza"];
   const ratings = {};
@@ -42,10 +42,9 @@ function computeRatingsForPlayer(player) {
       const peso = Number(weights[i]) || 0;
       somma += val * peso;
     }
-    const rating = Math.floor((somma / 250) * 100) / 100; // stesso approccio di script.js
+    const rating = Math.floor((somma / 250) * 100) / 100;
     ratings[roleName] = rating;
   });
-  // for convenience also add 'Average' and 'Max'
   const vals = Object.values(ratings);
   ratings.__avg = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
   ratings.__max = vals.length ? Math.max(...vals) : 0;
@@ -56,10 +55,8 @@ function renderPlayersTable(players) {
   const tbody = document.querySelector("#players-table tbody");
   tbody.innerHTML = "";
   players.forEach((p, idx) => {
-    const ratings = computeRatingsForPlayer(p);
     const tr = document.createElement("tr");
 
-    // checkbox
     const tdChk = document.createElement("td");
     tdChk.className = "checkbox-col";
     const chk = document.createElement("input");
@@ -68,11 +65,10 @@ function renderPlayersTable(players) {
     chk.dataset.index = idx;
     tdChk.appendChild(chk);
 
-    // name
     const tdName = document.createElement("td");
+    tdName.className = "name-col";
     tdName.textContent = p.name;
 
-    // stats columns
     const statNames = ["parata","contrasto","passaggio","tiro","velocita","forza"];
     const statCells = statNames.map(s => {
       const td = document.createElement("td");
@@ -88,20 +84,15 @@ function renderPlayersTable(players) {
   });
 }
 
-// Hungarian algorithm (same implementation)
+// Hungarian algorithm implementation
 function hungarianSolve(cost) {
   const INF = 1e12;
   let n = cost.length, m = cost[0].length;
-  // assume n <= m (positions <= players)
-  // if not, transpose (not expected)
-  if (n > m) {
-    throw new Error("Righe > colonne nel hungarian: non supportato qui");
-  }
+  if (n > m) { throw new Error("Righe > colonne nel hungarian: non supportato qui"); }
   const u = Array(n+1).fill(0), v = Array(m+1).fill(0);
   const p = Array(m+1).fill(0), way = Array(m+1).fill(0);
   for (let i = 1; i <= n; i++) {
-    p[0] = i;
-    let j0 = 0;
+    p[0] = i; let j0 = 0;
     const minv = Array(m+1).fill(INF);
     const used = Array(m+1).fill(false);
     do {
@@ -132,7 +123,6 @@ function hungarianSolve(cost) {
   return { assignment, value: -v[0] };
 }
 
-// selezione Hung: usa tutti i giocatori passati
 function selectHungarian(players, formationRoles, benchSize) {
   const P = formationRoles.length, N = players.length;
   const ratingMatrix = Array.from({length: P}, () => Array(N).fill(0));
@@ -140,8 +130,7 @@ function selectHungarian(players, formationRoles, benchSize) {
   for (let r = 0; r < P; r++) {
     const role = formationRoles[r];
     for (let c = 0; c < N; c++) {
-      const ratings = computeRatingsForPlayer(players[c]);
-      const val = Number(ratings[role]) || 0;
+      const val = Number(computeRatingsForPlayer(players[c])[role]) || 0;
       ratingMatrix[r][c] = val;
       if (val > maxRating) maxRating = val;
     }
@@ -150,13 +139,12 @@ function selectHungarian(players, formationRoles, benchSize) {
   const { assignment } = hungarianSolve(cost);
 
   const used = Array(N).fill(false);
-  const lineup = [];
   let total = 0;
+  const lineup = [];
   for (let r = 0; r < P; r++) {
     const pIdx = assignment[r];
-    if (pIdx == null || pIdx < 0) {
-      lineup.push({ position: formationRoles[r], player: null, rating: 0 });
-    } else {
+    if (pIdx == null || pIdx < 0) lineup.push({ position: formationRoles[r], player: null, rating: 0 });
+    else {
       used[pIdx] = true;
       const rt = ratingMatrix[r][pIdx];
       total += rt;
@@ -174,7 +162,6 @@ function selectHungarian(players, formationRoles, benchSize) {
   return { lineup, totalScore: total, bench, unassigned: remaining.map(r => r.player) };
 }
 
-// selezione greedy per ruolo: per ogni posizione prendi miglior giocatore rimasto per quel ruolo
 function selectGreedyByRole(players, formationRoles, benchSize) {
   const N = players.length;
   const used = Array(N).fill(false);
@@ -188,13 +175,8 @@ function selectGreedyByRole(players, formationRoles, benchSize) {
       const val = computeRatingsForPlayer(players[i])[role] || 0;
       if (val > bestVal) { bestVal = val; bestIdx = i; }
     }
-    if (bestIdx === -1) {
-      lineup.push({ position: role, player: null, rating: 0 });
-    } else {
-      used[bestIdx] = true;
-      lineup.push({ position: role, player: players[bestIdx], rating: bestVal });
-      total += bestVal;
-    }
+    if (bestIdx === -1) lineup.push({ position: role, player: null, rating: 0 });
+    else { used[bestIdx] = true; lineup.push({ position: role, player: players[bestIdx], rating: bestVal }); total += bestVal; }
   }
   const remaining = [];
   for (let i = 0; i < N; i++) if (!used[i]) {
@@ -206,21 +188,17 @@ function selectGreedyByRole(players, formationRoles, benchSize) {
   return { lineup, totalScore: total, bench, unassigned: remaining.map(r => r.player) };
 }
 
-// selezione per media: prendi top K giocatori per avg poi assegna Hungarian su sottoinsieme
 function selectByAverageThenHungarian(players, formationRoles, benchSize) {
   const P = formationRoles.length;
-  // calcola media per giocatore
   const playersWithAvg = players.map(p => {
     const ratings = computeRatingsForPlayer(p);
     return { p, avg: ratings.__avg || 0 };
   });
-  // scegli top (P + benchSize) per avere opzioni
   playersWithAvg.sort((a,b) => b.avg - a.avg);
   const subset = playersWithAvg.slice(0, Math.min(playersWithAvg.length, P + benchSize)).map(x => x.p);
   return selectHungarian(subset, formationRoles, benchSize);
 }
 
-// UI: rendering risultato
 function renderResult(res) {
   const la = document.getElementById("lineup-area");
   const ba = document.getElementById("bench-area");
@@ -257,14 +235,12 @@ function renderResult(res) {
   ba.appendChild(tb2);
 }
 
-// render players table (wired to UI)
 function refreshList() {
   const all = buildPlayersFromStorage();
   const max = Number(document.getElementById("maxPlayers").value) || all.length;
   renderPlayersTable(all.slice(0, max));
 }
 
-// azione principale
 function suggestFormation() {
   const all = buildPlayersFromStorage();
   const checks = Array.from(document.querySelectorAll("#players-table tbody input[type=checkbox]"));
@@ -280,33 +256,59 @@ function suggestFormation() {
   if (playersToUse.length < 11) { alert("Servono almeno 11 giocatori."); return; }
 
   const formationKey = document.getElementById("formation").value;
+  const formations = {
+    "4-3-3": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Ala","Punta","Ala"],
+    "4-4-2": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Centrocampista","Centrocampista","Punta","Punta"],
+    "3-5-2": ["Portiere","Difensore Centrale","Difensore Centrale","Difensore Centrale","Terzino","Centrocampista","Centrocampista","Centrocampista","Ala","Punta","Punta"],
+    "4-2-3-1": ["Portiere","Difensore Centrale","Difensore Centrale","Terzino","Terzino","Centrocampista","Centrocampista","Trequartista","Trequartista","Trequartista","Punta"]
+  };
   const roles = formations[formationKey];
   const benchSize = Number(document.getElementById("benchSize").value) || 7;
   const mode = document.getElementById("selectionMode").value;
 
   let res;
-  if (mode === "hungarian") {
-    res = selectHungarian(playersToUse, roles, benchSize);
-  } else if (mode === "bestRating") {
-    res = selectGreedyByRole(playersToUse, roles, benchSize);
-  } else { // bestAverage
-    res = selectByAverageThenHungarian(playersToUse, roles, benchSize);
-  }
+  if (mode === "hungarian") res = selectHungarian(playersToUse, roles, benchSize);
+  else if (mode === "bestRating") res = selectGreedyByRole(playersToUse, roles, benchSize);
+  else res = selectByAverageThenHungarian(playersToUse, roles, benchSize);
 
   renderResult(res);
 }
 
-// init wiring
 function initFormazioniPage() {
   const refreshBtn = document.getElementById("refresh-list");
   const suggestBtn = document.getElementById("suggest-btn");
+  const selectAllBtn = document.getElementById("select-all");
+  const filterInput = document.getElementById("filterName");
+
   if (refreshBtn) refreshBtn.addEventListener("click", refreshList);
   if (suggestBtn) suggestBtn.addEventListener("click", suggestFormation);
+
+  if (selectAllBtn) selectAllBtn.addEventListener("click", () => {
+    const tbody = document.querySelector('#players-table tbody');
+    if (!tbody) return;
+    const checkboxes = tbody.querySelectorAll('input[type=checkbox]');
+    const anyUnchecked = Array.from(checkboxes).some(cb => !cb.checked);
+    checkboxes.forEach(cb => cb.checked = anyUnchecked);
+  });
+
+  if (filterInput) {
+    let timer;
+    filterInput.addEventListener('input', (e) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const q = String(e.target.value || '').toLowerCase().trim();
+        const rows = document.querySelectorAll('#players-table tbody tr');
+        rows.forEach(row => {
+          const nameCell = row.querySelector('td.name-col') || row.querySelector('td:nth-child(2)');
+          const name = nameCell ? nameCell.textContent.toLowerCase() : '';
+          row.style.display = (!q || name.includes(q)) ? '' : 'none';
+        });
+      }, 120);
+    });
+  }
+
   refreshList();
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initFormazioniPage);
-} else {
-  initFormazioniPage();
-}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initFormazioniPage);
+else initFormazioniPage();
