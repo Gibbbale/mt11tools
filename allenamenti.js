@@ -47,7 +47,14 @@ function storageKeyAllenamento(nomeAllenamento) {
 
 function allenamentoCorrente() {
     const select = document.getElementById("allenamento");
-    return allenamenti[select.value];
+    const allenamento = allenamenti[select.value];
+
+    if(!allenamento) {
+        console.error(`Allenamento sconosciuto: "${select.value}"`);
+        return null;
+    }
+
+    return allenamento;
 }
 
 function idAllenamentoCorrente() {
@@ -84,6 +91,7 @@ function leggiErroriSalvati(nomeAllenamento) {
             return errori;
         }
     } catch (errore) {
+        console.error(`Dati allenamento "${nomeAllenamento}" corrotti in localStorage, reset effettuato:`, errore);
         localStorage.removeItem(storageKeyAllenamento(nomeAllenamento));
     }
 
@@ -93,6 +101,9 @@ function leggiErroriSalvati(nomeAllenamento) {
 function salvaErroriAllenamento() {
     const nomeAllenamento = idAllenamentoCorrente();
     const allenamento = allenamentoCorrente();
+
+    if(!allenamento) return null;
+
     const errori = {};
 
     for(let livello = 1; livello <= livelliAllenamento; livello++) {
@@ -119,6 +130,9 @@ function mostraStatoAllenamento(testo) {
 
 function aggiornaRegoleAllenamento() {
     const allenamento = allenamentoCorrente();
+
+    if(!allenamento) return;
+
     const regole = document.getElementById("regole-allenamento");
 
     regole.innerHTML = `<strong>${allenamento.nome}:</strong> ${allenamento.tryPerLivello} try per livello. Ogni try sbagliato vale ${allenamento.puntiSbagliato} punti. Al livello 1 ogni try riuscito vale ${allenamento.puntiIniziali} punti e aumenta di ${allenamento.incremento} punti a ogni livello.`;
@@ -126,6 +140,9 @@ function aggiornaRegoleAllenamento() {
 
 function calcolaAllenamento() {
     const allenamento = allenamentoCorrente();
+
+    if(!allenamento) return;
+
     let totaleOttenibile = 0;
     let totaleMassimo = 0;
     let puntiPersi = 0;
@@ -162,6 +179,9 @@ function calcolaAllenamento() {
 function aggiornaAllenamento() {
     calcolaAllenamento();
     const allenamento = salvaErroriAllenamento();
+
+    if(!allenamento) return;
+
     mostraStatoAllenamento(`${allenamento.nome} salvato.`);
 }
 
@@ -184,6 +204,9 @@ function creaSelectErrori(livello, valore, allenamento) {
 function creaTabellaAllenamento() {
     const nomeAllenamento = idAllenamentoCorrente();
     const allenamento = allenamentoCorrente();
+
+    if(!allenamento) return;
+
     const tbody = document.getElementById("livelli-allenamento");
     const erroriSalvati = leggiErroriSalvati(nomeAllenamento);
 
@@ -220,6 +243,8 @@ function creaTabellaAllenamento() {
 
 function azzeraErroriAllenamento() {
     const allenamento = allenamentoCorrente();
+
+    if(!allenamento) return;
 
     for(let livello = 1; livello <= livelliAllenamento; livello++) {
         document.getElementById(`errori-${livello}`).value = "0";

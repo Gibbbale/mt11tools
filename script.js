@@ -70,7 +70,9 @@ function leggiGiocatoriSalvati() {
             return giocatore && giocatore.id && giocatore.nome && giocatore.valori;
         });
     } catch (errore) {
+        console.error("Dati giocatori corrotti in localStorage, reset effettuato:", errore);
         localStorage.removeItem(playersStorageKey);
+        mostraStato("Dati salvati corrotti, reset effettuato.");
         return [];
     }
 }
@@ -142,6 +144,7 @@ function migraVecchioSalvataggio() {
 
         localStorage.removeItem(legacyStorageKey);
     } catch (errore) {
+        console.error("Migrazione vecchio salvataggio fallita:", errore);
         localStorage.removeItem(legacyStorageKey);
     }
 }
