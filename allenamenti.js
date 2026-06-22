@@ -242,3 +242,16 @@ function caricaAllenamentoIniziale() {
 }
 
 document.addEventListener("DOMContentLoaded", caricaAllenamentoIniziale);
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        allenamenti,
+        livelliAllenamento,
+        storageKeyAllenamento,
+        formattaPunti,
+        puntiSuccesso,
+        leggiErroriSalvati,
+        selectedTrainingStorageKey,
+        legacyForzaStorageKey,
+    };
+}
