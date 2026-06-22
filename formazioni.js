@@ -25,7 +25,7 @@ function buildPlayersFromStorage() {
   for (const k of candidateKeys) {
     const r = localStorage.getItem(k);
     if (!r) continue;
-    try { JSON.parse(r); raw = r; break; } catch(e) { continue; }
+    try { JSON.parse(r); raw = r; break; } catch(e) { console.warn(`formazioni: dati corrotti in localStorage per chiave "${k}":`, e); continue; }
   }
   if (!raw) return [];
 
@@ -70,7 +70,10 @@ function parseFloatSafe() {
 function computeRatingsForPlayer(player) {
   const attrsOrder = ["parata","contrasto","passaggio","tiro","velocita","forza"];
   const ratings = {};
-  if (!Array.isArray(ruoli)) return ratings;
+  if (typeof ruoli === 'undefined' || !Array.isArray(ruoli)) {
+    console.error('computeRatingsForPlayer: variabile globale "ruoli" non disponibile. Assicurarsi che script.js sia caricato prima di formazioni.js.');
+    return ratings;
+  }
   ruoli.forEach(([roleName, weights]) => {
     let sum = 0;
     for (let i = 0; i < attrsOrder.length; i++) {
@@ -265,9 +268,13 @@ function renderResult(res) {
   const la = document.getElementById("lineup-area");
   const ba = document.getElementById("bench-area");
 
-  // Svuota i contenitori prima di renderizzare per evitare accumulo di tabelle
-  if (la) la.innerHTML = "";
-  if (ba) ba.innerHTML = "";
+  if (!la || !ba) {
+    console.error('renderResult: elementi DOM "lineup-area" o "bench-area" non trovati.');
+    return;
+  }
+
+  la.innerHTML = "";
+  ba.innerHTML = "";
 
   const t = document.createElement("table");
   t.className = "lineup-table";
@@ -367,8 +374,14 @@ function suggestFormation() {
   const mode = document.getElementById('selectionMode')?.value || 'hungarian';
 
   let res;
-  if (mode === 'bestRating') res = selectGreedyByRole(playersToUse, roles, benchSize);
-  else res = selectHungarian(playersToUse, roles, benchSize);
+  try {
+    if (mode === 'bestRating') res = selectGreedyByRole(playersToUse, roles, benchSize);
+    else res = selectHungarian(playersToUse, roles, benchSize);
+  } catch (e) {
+    console.error('Errore durante il calcolo della formazione:', e);
+    alert('Errore nel calcolo della formazione. Controlla i dati dei giocatori e riprova.');
+    return;
+  }
 
   renderResult(res);
 }
