@@ -352,7 +352,7 @@ describe("buildPlayersFromStorage", () => {
     });
 });
 
-describe("selectGreedyByRole", () => {
+describe("selectGreedyByPlayer", () => {
     function generatePlayers(n) {
         const players = [];
         for (let i = 0; i < n; i++) {
@@ -372,7 +372,7 @@ describe("selectGreedyByRole", () => {
         const players = generatePlayers(15);
         const roles = formMod.FORMATIONS["4-4-2"];
 
-        const result = formMod.selectGreedyByRole(players, roles, 4);
+        const result = formMod.selectGreedyByPlayer(players, roles, 4);
         expect(result.lineup).toHaveLength(11);
     });
 
@@ -380,7 +380,7 @@ describe("selectGreedyByRole", () => {
         const players = generatePlayers(15);
         const roles = formMod.FORMATIONS["4-4-2"];
 
-        const result = formMod.selectGreedyByRole(players, roles, 4);
+        const result = formMod.selectGreedyByPlayer(players, roles, 4);
         const ids = result.lineup.filter(l => l.player).map(l => l.player.id);
         expect(new Set(ids).size).toBe(ids.length);
     });
@@ -389,7 +389,7 @@ describe("selectGreedyByRole", () => {
         const players = generatePlayers(18);
         const roles = formMod.FORMATIONS["4-4-2"];
 
-        const result = formMod.selectGreedyByRole(players, roles, 5);
+        const result = formMod.selectGreedyByPlayer(players, roles, 5);
         expect(result.bench.length).toBeLessThanOrEqual(5);
     });
 
@@ -397,7 +397,7 @@ describe("selectGreedyByRole", () => {
         const players = generatePlayers(15);
         const roles = formMod.FORMATIONS["4-4-2"];
 
-        const result = formMod.selectGreedyByRole(players, roles, 4);
+        const result = formMod.selectGreedyByPlayer(players, roles, 4);
         const sumRatings = result.lineup.reduce((sum, l) => sum + l.rating, 0);
         expect(result.totalScore).toBeCloseTo(sumRatings);
     });
@@ -406,7 +406,7 @@ describe("selectGreedyByRole", () => {
         const players = generatePlayers(11);
         const roles = formMod.FORMATIONS["4-4-2"];
 
-        const result = formMod.selectGreedyByRole(players, roles, 5);
+        const result = formMod.selectGreedyByPlayer(players, roles, 5);
         expect(result.lineup).toHaveLength(11);
         expect(result.bench).toHaveLength(0);
     });
@@ -450,7 +450,7 @@ describe("selectHungarian", () => {
         const roles = formMod.FORMATIONS["4-4-2"];
 
         const hungarian = formMod.selectHungarian(players, roles, 4);
-        const greedy = formMod.selectGreedyByRole(players, roles, 4);
+        const greedy = formMod.selectGreedyByPlayer(players, roles, 4);
 
         expect(hungarian.totalScore).toBeGreaterThanOrEqual(greedy.totalScore);
     });

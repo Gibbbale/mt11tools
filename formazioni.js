@@ -170,24 +170,37 @@ function selectHungarian(players, formationRoles, benchSize) {
   return { lineup: lineup, totalScore: total, bench: bench, unassigned: remaining.map(function(r) { return r.player; }) };
 }
 
-function selectGreedyByRole(players, formationRoles, benchSize) {
-  var N = players.length;
-  var used = Array(N).fill(false);
-  var lineup = [];
+function selectGreedyByPlayer(players, formationRoles, benchSize) {
+  var P = formationRoles.length;
+  var slotFilled = Array(P).fill(false);
+  var lineup = formationRoles.map(function(role) { return { position: role, player: null, rating: 0 }; });
   var total = 0;
-  for (var r = 0; r < formationRoles.length; r++) {
-    var role = formationRoles[r];
-    var bestIdx = -1, bestVal = -Infinity;
-    for (var i = 0; i < N; i++) {
-      if (used[i]) continue;
-      var val = computeAllRatings(players[i].valori)[role] || 0;
-      if (val > bestVal) { bestVal = val; bestIdx = i; }
+
+  var ranked = players.map(function(p, idx) {
+    var best = getBestRole(p);
+    return { player: p, index: idx, bestRating: best.rating };
+  });
+  ranked.sort(function(a, b) { return b.bestRating - a.bestRating; });
+
+  var assigned = {};
+  ranked.forEach(function(entry) {
+    var ratings = computeAllRatings(entry.player.valori);
+    var bestSlot = -1, bestVal = -Infinity;
+    for (var s = 0; s < P; s++) {
+      if (slotFilled[s]) continue;
+      var val = Number(ratings[formationRoles[s]]) || 0;
+      if (val > bestVal) { bestVal = val; bestSlot = s; }
     }
-    if (bestIdx === -1) lineup.push({ position: role, player: null, rating: 0 });
-    else { used[bestIdx] = true; lineup.push({ position: role, player: players[bestIdx], rating: bestVal }); total += bestVal; }
-  }
+    if (bestSlot === -1) return;
+    slotFilled[bestSlot] = true;
+    lineup[bestSlot] = { position: formationRoles[bestSlot], player: entry.player, rating: bestVal };
+    total += bestVal;
+    assigned[entry.index] = true;
+  });
+
   var remaining = [];
-  for (var i = 0; i < N; i++) if (!used[i]) {
+  for (var i = 0; i < players.length; i++) {
+    if (assigned[i]) continue;
     var best = getBestRole(players[i]);
     remaining.push({ player: players[i], bestRole: best.role, bestRating: best.rating });
   }
@@ -311,7 +324,7 @@ function suggestFormation() {
 
   var res;
   try {
-    if (mode === 'bestRating') res = selectGreedyByRole(playersToUse, roles, benchSize);
+    if (mode === 'bestRating') res = selectGreedyByPlayer(playersToUse, roles, benchSize);
     else res = selectHungarian(playersToUse, roles, benchSize);
   } catch (e) {
     console.error('Errore durante il calcolo della formazione:', e);
@@ -355,7 +368,7 @@ if (typeof module !== "undefined" && module.exports) {
         hungarianSolve,
         getBestRole,
         selectHungarian,
-        selectGreedyByRole,
+        selectGreedyByPlayer,
         roleToClass,
         renderPlayersTable,
         toggleSelectAll,
