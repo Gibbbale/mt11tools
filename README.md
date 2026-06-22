@@ -17,7 +17,7 @@ Inserisci i valori del tuo calciatore (Parata, Contrasto, Passaggio, Tiro, Veloc
 Seleziona i giocatori salvati e una formazione (3-5-2, 4-4-2, 4-3-3, ecc.) per ottenere la migliore disposizione possibile. Due modalita di calcolo:
 
 - **Hungarian** — assegnamento ottimale che massimizza il punteggio totale della formazione
-- **Migliore per rating** — assegnamento greedy che sceglie il miglior giocatore per ogni posizione
+- **Migliore per rating** — assegnamento greedy che parte dal giocatore con il rating piu alto e lo assegna alla sua miglior posizione disponibile, poi prosegue con il successivo
 
 Include anche la generazione automatica della panchina con i migliori giocatori rimanenti.
 
