@@ -313,3 +313,30 @@ function calcola() {
 }
 
 document.addEventListener("DOMContentLoaded", inizializzaPagina);
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        ruoli,
+        campi,
+        leggiValori,
+        leggiDatiGiocatore,
+        applicaDatiGiocatore,
+        mostraStato,
+        nascondiRisultati,
+        leggiGiocatoriSalvati,
+        scriviGiocatoriSalvati,
+        generaIdGiocatore,
+        creaNomeDefault,
+        aggiornaMenuGiocatori,
+        migraVecchioSalvataggio,
+        salvaGiocatore,
+        caricaGiocatoreSelezionato,
+        nuovoGiocatore,
+        cancellaGiocatore,
+        calcola,
+        inizializzaPagina,
+        playersStorageKey,
+        selectedPlayerStorageKey,
+        legacyStorageKey,
+    };
+}
