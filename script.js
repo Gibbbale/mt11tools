@@ -291,24 +291,28 @@ function calcola() {
 
     risultati.sort((a, b) => b.rating - a.rating);
 
-    let html = "";
+    const tbody = document.getElementById("risultati");
+    tbody.innerHTML = "";
 
     risultati.forEach((r, index) => {
-
-        let stile = "";
+        const tr = document.createElement("tr");
 
         if(index === 0){
-            stile = 'style="background-color:#c8f7c5;font-weight:bold;"';
+            tr.style.backgroundColor = "#c8f7c5";
+            tr.style.fontWeight = "bold";
         }
 
-        html += `
-        <tr ${stile}>
-            <td>${r.ruolo}</td>
-            <td>${r.rating.toFixed(2)}</td>
-        </tr>`;
+        const tdRuolo = document.createElement("td");
+        tdRuolo.textContent = r.ruolo;
+
+        const tdRating = document.createElement("td");
+        tdRating.textContent = r.rating.toFixed(2);
+
+        tr.appendChild(tdRuolo);
+        tr.appendChild(tdRating);
+        tbody.appendChild(tr);
     });
 
-    document.getElementById("risultati").innerHTML = html;
     document.getElementById("tabella-risultati").hidden = false;
 }
 
