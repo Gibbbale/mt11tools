@@ -1,29 +1,20 @@
-const ruoli = [
-    ["Portiere",[100,40,40,0,20,50]],
-    ["Difensore Centrale",[0,100,30,20,20,80]],
-    ["Terzino",[0,100,20,10,60,60]],
-    ["Terzino Fluidificante",[0,20,80,30,100,20]],
-    ["Mediano",[0,60,60,20,10,100]],
-    ["Centrocampista",[0,30,100,20,20,80]],
-    ["Trequartista",[0,20,100,80,20,30]],
-    ["Ala",[0,10,60,60,100,20]],
-    ["Punta",[0,20,20,100,30,80]]
-];
+// script.js — Rating calculator page logic
+// Depends on: shared.js (ruoli, STAT_FIELDS, PLAYERS_STORAGE_KEY, readPlayersFromStorage,
+//             writePlayersToStorage, generatePlayerId, computeRating, createStatusHandler)
 
 const legacyStorageKey = "ratingCalciatoreValori";
-const playersStorageKey = "ratingCalciatoreGiocatori";
 const selectedPlayerStorageKey = "ratingCalciatoreGiocatoreSelezionato";
-const campi = ["parata", "contrasto", "passaggio", "tiro", "velocita", "forza"];
-let timerStato;
+
+const mostraStato = createStatusHandler("stato-salvataggio");
 
 function leggiValori() {
-    return campi.map(id => Number(document.getElementById(id).value) || 0);
+    return STAT_FIELDS.map(id => Number(document.getElementById(id).value) || 0);
 }
 
 function leggiDatiGiocatore() {
     const valori = {};
 
-    campi.forEach(id => {
+    STAT_FIELDS.forEach(id => {
         valori[id] = document.getElementById(id).value;
     });
 
@@ -31,58 +22,14 @@ function leggiDatiGiocatore() {
 }
 
 function applicaDatiGiocatore(valori) {
-    campi.forEach(id => {
+    STAT_FIELDS.forEach(id => {
         document.getElementById(id).value = valori[id] || "";
     });
-}
-
-function mostraStato(testo) {
-    const stato = document.getElementById("stato-salvataggio");
-
-    stato.textContent = testo;
-    clearTimeout(timerStato);
-
-    timerStato = setTimeout(() => {
-        stato.textContent = "";
-    }, 2500);
 }
 
 function nascondiRisultati() {
     document.getElementById("risultati").innerHTML = "";
     document.getElementById("tabella-risultati").hidden = true;
-}
-
-function leggiGiocatoriSalvati() {
-    const salvati = localStorage.getItem(playersStorageKey);
-
-    if(!salvati) {
-        return [];
-    }
-
-    try {
-        const giocatori = JSON.parse(salvati);
-
-        if(!Array.isArray(giocatori)) {
-            return [];
-        }
-
-        return giocatori.filter(giocatore => {
-            return giocatore && giocatore.id && giocatore.nome && giocatore.valori;
-        });
-    } catch (errore) {
-        console.error("Dati giocatori corrotti in localStorage, reset effettuato:", errore);
-        localStorage.removeItem(playersStorageKey);
-        mostraStato("Dati salvati corrotti, reset effettuato.");
-        return [];
-    }
-}
-
-function scriviGiocatoriSalvati(giocatori) {
-    localStorage.setItem(playersStorageKey, JSON.stringify(giocatori));
-}
-
-function generaIdGiocatore() {
-    return `giocatore-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 }
 
 function creaNomeDefault(giocatori) {
@@ -97,7 +44,7 @@ function creaNomeDefault(giocatori) {
 
 function aggiornaMenuGiocatori(giocatoreSelezionato = "") {
     const select = document.getElementById("giocatori-salvati");
-    const giocatori = leggiGiocatoriSalvati();
+    const giocatori = readPlayersFromStorage();
 
     select.innerHTML = "";
     select.appendChild(new Option("Nuovo giocatore", ""));
@@ -110,7 +57,7 @@ function aggiornaMenuGiocatori(giocatoreSelezionato = "") {
 }
 
 function migraVecchioSalvataggio() {
-    if(localStorage.getItem(playersStorageKey)) {
+    if(localStorage.getItem(PLAYERS_STORAGE_KEY)) {
         return;
     }
 
@@ -124,16 +71,16 @@ function migraVecchioSalvataggio() {
         const dati = JSON.parse(salvati);
         const valori = {};
 
-        campi.forEach(id => {
+        STAT_FIELDS.forEach(id => {
             valori[id] = dati[id] || "";
         });
 
-        const haValori = campi.some(id => String(valori[id]).trim() !== "");
+        const haValori = STAT_FIELDS.some(id => String(valori[id]).trim() !== "");
 
         if(haValori) {
-            const id = generaIdGiocatore();
+            const id = generatePlayerId();
 
-            scriviGiocatoriSalvati([{
+            writePlayersToStorage([{
                 id: id,
                 nome: "Giocatore salvato",
                 valori: valori
@@ -152,7 +99,7 @@ function migraVecchioSalvataggio() {
 function salvaGiocatore() {
     const nomeInput = document.getElementById("nome-giocatore");
     const select = document.getElementById("giocatori-salvati");
-    let giocatori = leggiGiocatoriSalvati();
+    let giocatori = readPlayersFromStorage();
     let id = select.value;
     let nome = nomeInput.value.trim();
 
@@ -170,7 +117,7 @@ function salvaGiocatore() {
     }
 
     const datiGiocatore = {
-        id: id || generaIdGiocatore(),
+        id: id || generatePlayerId(),
         nome: nome,
         valori: leggiDatiGiocatore()
     };
@@ -183,7 +130,7 @@ function salvaGiocatore() {
         giocatori.push(datiGiocatore);
     }
 
-    scriviGiocatoriSalvati(giocatori);
+    writePlayersToStorage(giocatori);
     aggiornaMenuGiocatori(datiGiocatore.id);
     nomeInput.value = nome;
     localStorage.setItem(selectedPlayerStorageKey, datiGiocatore.id);
@@ -199,7 +146,7 @@ function caricaGiocatoreSelezionato() {
         return;
     }
 
-    const giocatore = leggiGiocatoriSalvati().find(elemento => elemento.id === id);
+    const giocatore = readPlayersFromStorage().find(elemento => elemento.id === id);
 
     if(!giocatore) {
         aggiornaMenuGiocatori();
@@ -218,7 +165,7 @@ function caricaGiocatoreSelezionato() {
 function nuovoGiocatore(mostraMessaggio = true) {
     document.getElementById("nome-giocatore").value = "";
 
-    campi.forEach(id => {
+    STAT_FIELDS.forEach(id => {
         document.getElementById(id).value = "";
     });
 
@@ -240,16 +187,16 @@ function cancellaGiocatore() {
         return;
     }
 
-    const giocatori = leggiGiocatoriSalvati().filter(giocatore => giocatore.id !== id);
+    const giocatori = readPlayersFromStorage().filter(giocatore => giocatore.id !== id);
 
-    scriviGiocatoriSalvati(giocatori);
+    writePlayersToStorage(giocatori);
     aggiornaMenuGiocatori();
     nuovoGiocatore(false);
     mostraStato("Giocatore eliminato.");
 }
 
 function preparaModificheManuali() {
-    campi.forEach(id => {
+    STAT_FIELDS.forEach(id => {
         document.getElementById(id).addEventListener("input", nascondiRisultati);
     });
 }
@@ -260,7 +207,7 @@ function inizializzaPagina() {
     preparaModificheManuali();
 
     const ultimoGiocatore = localStorage.getItem(selectedPlayerStorageKey);
-    const esisteUltimoGiocatore = leggiGiocatoriSalvati().some(giocatore => {
+    const esisteUltimoGiocatore = readPlayersFromStorage().some(giocatore => {
         return giocatore.id === ultimoGiocatore;
     });
 
@@ -278,13 +225,7 @@ function calcola() {
 
     ruoli.forEach(([nome, pesi]) => {
 
-        let somma = 0;
-
-        for(let i = 0; i < 6; i++) {
-            somma += valori[i] * pesi[i];
-        }
-
-        let rating = Math.floor((somma / 250) * 100) / 100;
+        let rating = computeRating(valori, pesi);
 
         risultati.push({
             ruolo: nome,

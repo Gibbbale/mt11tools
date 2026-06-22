@@ -39,7 +39,9 @@ const allenamenti = {
 const livelliAllenamento = 100;
 const selectedTrainingStorageKey = "allenamentoSelezionato";
 const legacyForzaStorageKey = "allenamentoForzaErrori";
-let timerStatoAllenamento;
+
+const mostraStatoAllenamento = createStatusHandler("stato-allenamento");
+
 
 function storageKeyAllenamento(nomeAllenamento) {
     return `allenamento-${nomeAllenamento}-errori`;
@@ -115,17 +117,6 @@ function salvaErroriAllenamento() {
     localStorage.setItem(selectedTrainingStorageKey, nomeAllenamento);
 
     return allenamento;
-}
-
-function mostraStatoAllenamento(testo) {
-    const stato = document.getElementById("stato-allenamento");
-
-    stato.textContent = testo;
-    clearTimeout(timerStatoAllenamento);
-
-    timerStatoAllenamento = setTimeout(() => {
-        stato.textContent = "";
-    }, 2500);
 }
 
 function aggiornaRegoleAllenamento() {
