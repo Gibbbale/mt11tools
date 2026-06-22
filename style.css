@@ -5,6 +5,12 @@ html {
         repeating-linear-gradient(90deg, #11613d 0 90px, #187247 90px 180px);
 }
 
+html:has(body.home-page) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 body {
     font-family: Arial, sans-serif;
     max-width: 800px;
