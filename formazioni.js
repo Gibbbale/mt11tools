@@ -271,7 +271,7 @@ function renderResult(res, formationName) {
 
   t.appendChild(tb);
   la.appendChild(t);
-  la.innerHTML += '<p class="small">Punteggio totale: ' + res.totalScore.toFixed(2) + '</p>';
+  la.innerHTML += '<p class="punteggio-totale">Punteggio totale: <strong>' + res.totalScore.toFixed(2) + '</strong></p>';
 
   ba.innerHTML = "<h4>Panchina</h4>";
   if (!res.bench || res.bench.length === 0) { ba.innerHTML += "<p>(nessuno)</p>"; return; }
