@@ -435,3 +435,14 @@ th {
 .lineup-table th, .lineup-table td {
   padding: 8px 10px;
 }
+
+/* Punteggio totale sotto la tabella formazioni */
+.punteggio-totale {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border: 1px solid #b8c9be;
+  border-radius: 6px;
+  background-color: #e8f1eb;
+  color: #174d35;
+  font-size: 15px;
+}
