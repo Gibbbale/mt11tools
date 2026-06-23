@@ -214,7 +214,7 @@ function roleToClass(role) {
   return 'role-' + role.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 }
 
-function renderResult(res) {
+function renderResult(res, formationName) {
   var la = document.getElementById("lineup-area");
   var ba = document.getElementById("bench-area");
 
@@ -225,6 +225,12 @@ function renderResult(res) {
 
   la.innerHTML = "";
   ba.innerHTML = "";
+
+  if (formationName) {
+    var heading = document.createElement("h4");
+    heading.textContent = "Modulo: " + formationName;
+    la.appendChild(heading);
+  }
 
   var t = document.createElement("table");
   t.className = "lineup-table";
@@ -318,21 +324,39 @@ function suggestFormation() {
   if (playersToUse.length < 11) { alert('Servono almeno 11 giocatori.'); return; }
 
   var formationKey = document.getElementById('formation').value || Object.keys(FORMATIONS)[0];
-  var roles = FORMATIONS[formationKey] || FORMATIONS[Object.keys(FORMATIONS)[0]];
   var benchSize = Number(document.getElementById('benchSize').value) || 7;
   var mode = document.getElementById('selectionMode').value || 'hungarian';
 
   var res;
+  var bestFormationName = formationKey;
+
   try {
-    if (mode === 'bestRating') res = selectGreedyByPlayer(playersToUse, roles, benchSize);
-    else res = selectHungarian(playersToUse, roles, benchSize);
+    if (formationKey === 'best') {
+      var bestScore = -Infinity;
+      var keys = Object.keys(FORMATIONS);
+      for (var i = 0; i < keys.length; i++) {
+        var roles = FORMATIONS[keys[i]];
+        var candidate;
+        if (mode === 'bestRating') candidate = selectGreedyByPlayer(playersToUse, roles, benchSize);
+        else candidate = selectHungarian(playersToUse, roles, benchSize);
+        if (candidate.totalScore > bestScore) {
+          bestScore = candidate.totalScore;
+          res = candidate;
+          bestFormationName = keys[i];
+        }
+      }
+    } else {
+      var roles = FORMATIONS[formationKey] || FORMATIONS[Object.keys(FORMATIONS)[0]];
+      if (mode === 'bestRating') res = selectGreedyByPlayer(playersToUse, roles, benchSize);
+      else res = selectHungarian(playersToUse, roles, benchSize);
+    }
   } catch (e) {
     console.error('Errore durante il calcolo della formazione:', e);
     alert('Errore nel calcolo della formazione. Controlla i dati dei giocatori e riprova.');
     return;
   }
 
-  renderResult(res);
+  renderResult(res, bestFormationName);
 }
 
 function refreshList() {
