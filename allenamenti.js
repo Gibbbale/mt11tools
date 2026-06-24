@@ -72,6 +72,10 @@ function idAllenamentoCorrente() {
 }
 
 function formattaPunti(valore) {
+    // Normalizza -0 e valori che arrotondano a zero (evita di mostrare "-0"
+    // dovuto a errori di floating-point quando il calcolo coinvolge divisioni,
+    // es. nella pagina Velocità).
+    if (!Number.isFinite(valore) || Math.abs(valore) < 0.005) valore = 0;
     return valore.toLocaleString("it-IT", {
         maximumFractionDigits: 2
     });
