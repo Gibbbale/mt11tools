@@ -143,10 +143,20 @@ describe("puntiSuccesso", () => {
         expect(mod.puntiSuccesso(5, velocita)).toBe(63);
     });
 
-    test("velocita has 11 tries and 0 points for misses", () => {
+    test("velocita has 11 tries, 0 points for misses, and puntiPerLivello", () => {
         const velocita = mod.allenamenti.velocita;
         expect(velocita.tryPerLivello).toBe(11);
         expect(velocita.puntiSbagliato).toBe(0);
+        expect(velocita.puntiPerLivello).toBe(true);
+    });
+
+    test("velocita level totals: L1=45, L2 cumulative=95", () => {
+        const velocita = mod.allenamenti.velocita;
+        const l1 = mod.puntiSuccesso(1, velocita);
+        const l2 = mod.puntiSuccesso(2, velocita);
+        expect(l1).toBe(45);
+        expect(l2).toBe(50);
+        expect(l1 + l2).toBe(95);
     });
 });
 
