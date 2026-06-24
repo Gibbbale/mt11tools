@@ -26,14 +26,20 @@ let mod;
 beforeEach(() => {
     setupAllenamentiDOM();
     localStorage.clear();
+    global.createStatusHandler = function(id) {
+        return function(text) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = text;
+        };
+    };
     jest.isolateModules(() => {
         mod = require("../allenamenti.js");
     });
 });
 
 describe("allenamenti config", () => {
-    test("has 5 training types defined", () => {
-        expect(Object.keys(mod.allenamenti)).toHaveLength(5);
+    test("has 6 training types defined", () => {
+        expect(Object.keys(mod.allenamenti)).toHaveLength(6);
     });
 
     test("each training has required fields", () => {
@@ -46,7 +52,9 @@ describe("allenamenti config", () => {
             expect(typeof a.tryPerLivello).toBe("number");
             expect(typeof a.puntiSbagliato).toBe("number");
             expect(typeof a.puntiIniziali).toBe("number");
-            expect(typeof a.incremento).toBe("number");
+            expect(
+                typeof a.incremento === "number" || Array.isArray(a.incremento)
+            ).toBe(true);
         });
     });
 
@@ -124,6 +132,21 @@ describe("puntiSuccesso", () => {
         const passaggio = mod.allenamenti.passaggio;
         const expected = passaggio.puntiIniziali + 99 * passaggio.incremento;
         expect(mod.puntiSuccesso(100, passaggio)).toBeCloseTo(expected);
+    });
+
+    test("handles alternating increments for velocita", () => {
+        const velocita = mod.allenamenti.velocita;
+        expect(mod.puntiSuccesso(1, velocita)).toBe(45);
+        expect(mod.puntiSuccesso(2, velocita)).toBe(50);
+        expect(mod.puntiSuccesso(3, velocita)).toBe(54);
+        expect(mod.puntiSuccesso(4, velocita)).toBe(59);
+        expect(mod.puntiSuccesso(5, velocita)).toBe(63);
+    });
+
+    test("velocita has 11 tries and 0 points for misses", () => {
+        const velocita = mod.allenamenti.velocita;
+        expect(velocita.tryPerLivello).toBe(11);
+        expect(velocita.puntiSbagliato).toBe(0);
     });
 });
 
