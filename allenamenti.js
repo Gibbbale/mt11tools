@@ -27,6 +27,14 @@ const allenamenti = {
         puntiIniziali: 60,
         incremento: 6
     },
+    velocita: {
+        nome: "Velocità",
+        tryPerLivello: 11,
+        puntiSbagliato: 0,
+        puntiIniziali: 45,
+        incremento: [5, 4],
+        puntiPerLivello: true
+    },
     forza: {
         nome: "Forza",
         tryPerLivello: 3,
@@ -70,6 +78,13 @@ function formattaPunti(valore) {
 }
 
 function puntiSuccesso(livello, allenamento) {
+    if (Array.isArray(allenamento.incremento)) {
+        var punti = allenamento.puntiIniziali;
+        for (var i = 0; i < livello - 1; i++) {
+            punti += allenamento.incremento[i % allenamento.incremento.length];
+        }
+        return punti;
+    }
     return allenamento.puntiIniziali + ((livello - 1) * allenamento.incremento);
 }
 
@@ -126,7 +141,18 @@ function aggiornaRegoleAllenamento() {
 
     const regole = document.getElementById("regole-allenamento");
 
-    regole.innerHTML = `<strong>${allenamento.nome}:</strong> ${allenamento.tryPerLivello} try per livello. Ogni try sbagliato vale ${allenamento.puntiSbagliato} punti. Al livello 1 ogni try riuscito vale ${allenamento.puntiIniziali} punti e aumenta di ${allenamento.incremento} punti a ogni livello.`;
+    var testoSbagliato = allenamento.puntiSbagliato === 0
+        ? "Ogni try sbagliato non dà punti."
+        : `Ogni try sbagliato vale ${allenamento.puntiSbagliato} punti.`;
+    var testoIncremento = Array.isArray(allenamento.incremento)
+        ? `+${allenamento.incremento.join("/+")} alternati`
+        : `${allenamento.incremento}`;
+
+    var testoPunti = allenamento.puntiPerLivello
+        ? `Il livello 1 vale ${allenamento.puntiIniziali} punti totali`
+        : `Al livello 1 ogni try riuscito vale ${allenamento.puntiIniziali} punti`;
+
+    regole.innerHTML = `<strong>${allenamento.nome}:</strong> ${allenamento.tryPerLivello} try per livello. ${testoSbagliato} ${testoPunti} e aumenta di ${testoIncremento} punti a ogni livello.`;
 }
 
 function calcolaAllenamento() {
@@ -146,8 +172,15 @@ function calcolaAllenamento() {
         const tryRiusciti = allenamento.tryPerLivello - errori;
 
         // punti ottenuti nel singolo livello
-        const puntiLivello = (tryRiusciti * puntiRiuscito) + (errori * allenamento.puntiSbagliato);
-        const massimoLivello = allenamento.tryPerLivello * puntiRiuscito;
+        var puntiLivello, massimoLivello;
+        if (allenamento.puntiPerLivello) {
+            var puntiPerTry = puntiRiuscito / allenamento.tryPerLivello;
+            puntiLivello = (tryRiusciti * puntiPerTry) + (errori * allenamento.puntiSbagliato);
+            massimoLivello = puntiRiuscito;
+        } else {
+            puntiLivello = (tryRiusciti * puntiRiuscito) + (errori * allenamento.puntiSbagliato);
+            massimoLivello = allenamento.tryPerLivello * puntiRiuscito;
+        }
 
         // accumuli globali
         totaleOttenibile += puntiLivello;
